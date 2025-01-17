@@ -9,7 +9,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
-import 'package:getnet_payments/getnet_payments.dart';
+// import 'package:getnet_payments/getnet_payments.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:getnet_payments/enums/payment_type_enum.dart';
 import 'package:getnet_payments/getnet_deeplink_payments_method_channel.dart';
 
 void main() {
@@ -25,6 +26,12 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await platform.payment(), '42');
+    expect(
+        await platform.payment(
+          amount: 42,
+          paymentType: PaymentTypeEnum.credit,
+          callerId: '42',
+        ),
+        '42');
   });
 }
