@@ -1,5 +1,4 @@
-# getnet_payments
-
+# Getnet Payments - Plugin Flutter para Pagamentos Getnet (Não Oficial)
 <a href="https://www.buymeacoffee.com/carvalhowesley" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 <p>
@@ -7,7 +6,8 @@
 <a href="https://www.linkedin.com/in/wesleycarvalhodev" rel="ugc"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Badge"></a>
 </p>
 
-**getnet_payments** é um plugin Flutter para integração de pagamentos com a Getnet utilizando **deeplinks**. Ele permite abrir o Intent do deeplink diretamente do aplicativo Flutter e retornar um objeto `Transaction` com o resultado da transação.
+
+**getnet_payments** é um plugin Flutter (Não Oficial) para integração de pagamentos com a Getnet utilizando **deeplinks**. Ele permite abrir o Intent do deeplink diretamente do aplicativo Flutter e retornar um objeto `Transaction` com o resultado da transação.
 
 ## Recursos
 
@@ -39,6 +39,17 @@ flutter pub get
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
+```
+
+2. Altere o minSdkVersion para 22 ou superior no arquivo `android/app/build.gradle`.
+
+```gradle
+android {
+    defaultConfig {
+        minSdkVersion 22
+        targetSdkVersion 33 // Recomendado para o Android 13
+    }
+}
 ```
 
 ## Uso
