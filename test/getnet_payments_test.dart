@@ -1,12 +1,78 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:getnet_payments/enums/payment_type_enum.dart';
+import 'package:getnet_payments/getnet_deeplink_payments_platform_interface.dart';
+import 'package:getnet_payments/models/transaction.dart';
+import 'package:mockito/mockito.dart';
+import 'package:getnet_payments/getnet_deeplink_payments.dart';
 
-import 'package:getnet_payments/getnet_payments.dart';
+class MockGetnetDeeplinkPaymentsPlatform extends Mock
+    implements GetnetDeeplinkPaymentsPlatform {}
 
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+  group('GetnetDeeplinkPayments', () {
+    late GetnetDeeplinkPayments getnetPayments;
+    late MockGetnetDeeplinkPaymentsPlatform mockPlatform;
+
+    setUp(() {
+      mockPlatform = MockGetnetDeeplinkPaymentsPlatform();
+      GetnetDeeplinkPaymentsPlatform.instance = mockPlatform;
+      getnetPayments = GetnetDeeplinkPayments();
+    });
+
+    test('should throw assertion error when amount is less than or equal to 0',
+        () {
+      expect(
+        () => getnetPayments.payment(
+          amount: 0,
+          paymentType: PaymentTypeEnum.credit,
+          callerId: '123',
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('should throw assertion error when callerId is empty', () {
+      expect(
+        () => getnetPayments.payment(
+          amount: 100.0,
+          paymentType: PaymentTypeEnum.credit,
+          callerId: '',
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('should call platform implementation with correct arguments',
+        () async {
+      final mockTransaction = Transaction(
+        result: '0',
+        callerId: '123',
+      );
+
+      when(await mockPlatform.payment(
+        amount: 100.0,
+        paymentType: PaymentTypeEnum.credit,
+        callerId: '123',
+        installment: 1,
+      ))
+          .thenAnswer((_) => mockTransaction);
+
+      final result = await getnetPayments.payment(
+        amount: 100.0,
+        paymentType: PaymentTypeEnum.credit,
+        callerId: '123',
+        installment: 2,
+      );
+
+      expect(result, isNotNull);
+      expect(result?.result, '0');
+      expect(result?.callerId, '123');
+      verify(mockPlatform.payment(
+        amount: 100.0,
+        paymentType: PaymentTypeEnum.credit,
+        callerId: '123',
+        installment: 2,
+      )).called(1);
+    });
   });
 }
