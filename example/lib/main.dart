@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:getnet_payments/enums/payment_type_enum.dart';
 import 'package:getnet_payments/getnet_payments.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   TextEditingController valueController = TextEditingController();
+  String? mensagem;
 
   @override
   void initState() {
@@ -60,18 +64,140 @@ class _MyAppState extends State<MyApp> {
 
                         final valor = double.parse(valueController.text);
                         try {
-                          final result = await GetnetPayments.deeplink.payment(
+                          final transaction =
+                              await GetnetPayments.deeplink.payment(
                             amount: valor,
                             paymentType: PaymentTypeEnum.credit,
-                            callerId: "123456789",
+                            callerId: const Uuid().v4(),
                           );
-                          if (result == null) return;
-                        } catch (e) {}
+                          if (transaction != null) {
+                            setState(() {
+                              mensagem =
+                                  '${transaction.result} - ${transaction.resultDetails}';
+                            });
+                          }
+                        } catch (e) {
+                          log(e.toString());
+                          setState(() {
+                            mensagem = 'Erro ao realizar pagamento';
+                          });
+                        }
                       },
                       child: const Text('CRÉDITO'),
                     ),
                   ],
                 ),
+                Wrap(
+                  children: [
+                    //DEBITO
+                    ElevatedButton(
+                      onPressed: () async {
+                        FocusScope.of(context).unfocus();
+                        if (valueController.text.isEmpty) return;
+
+                        final valor = double.parse(valueController.text);
+                        try {
+                          final transaction =
+                              await GetnetPayments.deeplink.payment(
+                            amount: valor,
+                            paymentType: PaymentTypeEnum.debit,
+                            callerId: const Uuid().v4(),
+                          );
+                          if (transaction != null) {
+                            setState(() {
+                              mensagem =
+                                  '${transaction.result} - ${transaction.resultDetails}';
+                            });
+                          }
+                        } catch (e) {
+                          log(e.toString());
+                          setState(() {
+                            mensagem = 'Erro ao realizar pagamento';
+                          });
+                        }
+                      },
+                      child: const Text('DÉBITO'),
+                    ),
+                  ],
+                ),
+                Wrap(
+                  children: [
+                    //VOUCHER
+                    ElevatedButton(
+                      onPressed: () async {
+                        FocusScope.of(context).unfocus();
+                        if (valueController.text.isEmpty) return;
+
+                        final valor = double.parse(valueController.text);
+                        try {
+                          final transaction =
+                              await GetnetPayments.deeplink.payment(
+                            amount: valor,
+                            paymentType: PaymentTypeEnum.voucher,
+                            callerId: const Uuid().v4(),
+                          );
+                          if (transaction != null) {
+                            setState(() {
+                              mensagem =
+                                  '${transaction.result} - ${transaction.resultDetails}';
+                            });
+                          }
+                        } catch (e) {
+                          log(e.toString());
+                          setState(() {
+                            mensagem = 'Erro ao realizar pagamento';
+                          });
+                        }
+                      },
+                      child: const Text('VOUCHER'),
+                    ),
+                  ],
+                ),
+                Wrap(
+                  children: [
+                    //PIX
+                    ElevatedButton(
+                      onPressed: () async {
+                        FocusScope.of(context).unfocus();
+                        if (valueController.text.isEmpty) return;
+
+                        final valor = double.parse(valueController.text);
+                        try {
+                          final transaction =
+                              await GetnetPayments.deeplink.payment(
+                            amount: valor,
+                            paymentType: PaymentTypeEnum.pix,
+                            callerId: const Uuid().v4(),
+                          );
+                          if (transaction != null) {
+                            setState(() {
+                              mensagem =
+                                  '${transaction.result} - ${transaction.resultDetails}';
+                            });
+                          }
+                        } catch (e) {
+                          log(e.toString());
+                          setState(() {
+                            mensagem = 'Erro ao realizar pagamento';
+                          });
+                        }
+                      },
+                      child: const Text('PIX'),
+                    ),
+                  ],
+                ),
+                if (mensagem != null)
+                  Column(
+                    children: [
+                      const Divider(),
+                      const Text('Resultado:'),
+                      const Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(mensagem!),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

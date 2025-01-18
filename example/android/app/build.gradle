@@ -42,18 +42,46 @@ android {
         applicationId = "br.com.joelabs.getnet_payments_example"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = 21
+        minSdk = 22
         targetSdk = 33
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+    signingConfigs {
+        config {
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            testCoverageEnabled true
+            signingConfig signingConfigs.debug //Deve ser inserida essa linha no buildTypes
+            crunchPngs false
+            shrinkResources false // Desativado no modo debug
+            minifyEnabled false // Desativado no modo debug
+        }
+        release {
+            debuggable false
+            minifyEnabled true // Ativar compactação de código no modo release
+            shrinkResources true // Ativar remoção de recursos no modo release
+            signingConfig signingConfigs.config //Deve ser inserida essa linha no buildTypes
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            crunchPngs true
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs '../libs'
+        }
+    }
+
+    dependencies {
+        implementation fileTree(dir: 'libs', include: ['*.aar'])
     }
 }
 

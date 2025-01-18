@@ -2,7 +2,10 @@
     <application
         android:label="getnet_payments_example"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:launchMode="singleTask"
+        android:alwaysRetainTaskState="true"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true"
