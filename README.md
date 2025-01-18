@@ -40,10 +40,3 @@ samples, guidance on mobile development, and a full API reference.
         }
     }
 
-
-
-    AndroidManifest.xml
-    <application
-        android:launchMode="singleTask"
-        android:alwaysRetainTaskState="true"
-        ...></application>
