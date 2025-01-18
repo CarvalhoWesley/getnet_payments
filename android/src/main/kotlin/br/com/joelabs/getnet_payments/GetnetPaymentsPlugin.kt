@@ -56,12 +56,13 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
 
   override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
       when (call.method) {
-          "paymentDeeplink" -> {
+          "paymentDeeplink" -> 
               deeplinkUsecase?.doPayment(call, result)
-          }
-          else -> {
+          "refundDeeplink" -> 
+              deeplinkUsecase?.doRefund(call, result)
+          else -> 
               result.notImplemented()
-          }
+          
       }
   }
 }

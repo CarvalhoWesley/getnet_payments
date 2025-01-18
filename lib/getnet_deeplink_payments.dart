@@ -33,4 +33,26 @@ class GetnetDeeplinkPayments {
       rethrow;
     }
   }
+
+  Future<Transaction?> refund({
+    required double amount,
+    DateTime? transactionDate,
+    String? cvNumber,
+    String? originalTerminal,
+  }) async {
+    assert(amount > 0, 'O valor da compra deve ser maior que zero');
+
+    try {
+      // Chamar a plataforma para iniciar o pagamento
+      return GetnetDeeplinkPaymentsPlatform.instance.refund(
+        amount: amount,
+        transactionDate: transactionDate,
+        cvNumber: cvNumber,
+        originalTerminal: originalTerminal,
+      );
+    } catch (e) {
+      // Emitir erro pelo stream
+      rethrow;
+    }
+  }
 }
