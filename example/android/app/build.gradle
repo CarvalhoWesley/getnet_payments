@@ -48,29 +48,11 @@ android {
         versionName = flutterVersionName
     }
 
-    signingConfigs {
-        config {
-            v1SigningEnabled true
-            v2SigningEnabled true
-        }
-    }
-
     buildTypes {
-        debug {
-            debuggable true
-            testCoverageEnabled true
-            signingConfig signingConfigs.debug //Deve ser inserida essa linha no buildTypes
-            crunchPngs false
-            shrinkResources false // Desativado no modo debug
-            minifyEnabled false // Desativado no modo debug
-        }
         release {
-            debuggable false
-            minifyEnabled true // Ativar compactação de código no modo release
-            shrinkResources true // Ativar remoção de recursos no modo release
-            signingConfig signingConfigs.config //Deve ser inserida essa linha no buildTypes
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            crunchPngs true
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.debug
         }
     }
 
