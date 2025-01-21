@@ -18,4 +18,11 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     required String callerId,
     int installment,
   });
+
+  Future<Transaction?> refund({
+    required double amount,
+    DateTime? transactionDate,
+    String? cvNumber,
+    String? originTerminal,
+  });
 }

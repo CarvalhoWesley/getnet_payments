@@ -64,6 +64,57 @@ class DeeplinkUsecase(private val activity: Activity?) {
         }
     }
 
+    fun doRefund(call: MethodCall, result: MethodChannel.Result) {
+        val amount = call.argument<Double>("amount")
+        val transactionDate = call.argument<String>("transactionDate")
+        val cvNumber = call.argument<String>("cvNumber")
+        val originTerminal = call.argument<String>("originTerminal")
+
+        if (amount == null || amount <= 0) {
+            result.error("INVALID_ARGUMENTS", "Invalid amount provided", null)
+            return
+        }
+
+        // Converte o double para string no formato de 12 dígitos
+        val amountFormatted = String.format("%012d", (amount * 100).toLong())
+
+        if (amountFormatted.isNullOrEmpty()) {
+            result.error("INVALID_ARGUMENTS", "Required arguments are missing", null)
+            return
+        }
+
+        // Construir a URI do deeplink
+        val uriBuilder = Uri.Builder()
+            .scheme("getnet")
+            .authority("pagamento")
+            .appendPath("v1")
+            .appendPath("refund")
+            .appendQueryParameter("amount", amountFormatted)
+            .appendQueryParameter("allowPrintCurrentTransaction", "false")
+            
+        if (!transactionDate.isNullOrEmpty()) {
+            uriBuilder.appendQueryParameter("transactionDate", transactionDate)
+        }
+
+        if (!cvNumber.isNullOrEmpty()) {
+            uriBuilder.appendQueryParameter("cvNumber", cvNumber)
+        }
+
+        if (!originTerminal.isNullOrEmpty()) {
+            uriBuilder.appendQueryParameter("originTerminal", originTerminal)
+        }
+
+        val deeplinkUri = uriBuilder.build()
+        val intent = Intent(Intent.ACTION_VIEW, deeplinkUri)
+        pendingResult = result
+
+        try {
+            activity?.startActivityForResult(intent, REQUEST_CODE_PAYMENT)
+        } catch (e: Exception) {
+            result.error("DEEPLINK_ERROR", "Failed to open deeplink: ${e.localizedMessage}", null)
+        }
+    }
+
     fun handleActivityResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             val transaction = mapOf(
@@ -90,7 +141,10 @@ class DeeplinkUsecase(private val activity: Activity?) {
                 "automationSlip" to data.getStringExtra("automationSlip"),
                 "printMerchantPreference" to data.getBooleanExtra("printMerchantPreference", false),
                 "orderId" to data.getStringExtra("orderId"),
-                "pixPayloadResponse" to data.getStringExtra("pixPayloadResponse")
+                "pixPayloadResponse" to data.getStringExtra("pixPayloadResponse"),
+                "refundTransactionDate" to data.getStringExtra("refundTransactionDate"),
+                "refundCvNumber" to data.getStringExtra("refundCvNumber"),
+                "refundOriginTerminal" to data.getStringExtra("refundOriginTerminal")
             )
             val gson = Gson()
             val transactionJson = gson.toJson(transaction)

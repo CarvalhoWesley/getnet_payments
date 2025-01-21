@@ -24,6 +24,9 @@ class Transaction {
   final bool? printMerchantPreference;
   final String? orderId;
   final String? pixPayloadResponse;
+  final String? refundTransactionDate;
+  final String? refundCvNumber;
+  final String? refundOriginTerminal;
 
   Transaction({
     this.result,
@@ -49,6 +52,9 @@ class Transaction {
     this.printMerchantPreference,
     this.orderId,
     this.pixPayloadResponse,
+    this.refundTransactionDate,
+    this.refundCvNumber,
+    this.refundOriginTerminal,
   });
 
   Transaction copyWith({
@@ -75,6 +81,9 @@ class Transaction {
     bool? printMerchantPreference,
     String? orderId,
     String? pixPayloadResponse,
+    String? refundTransactionDate,
+    String? refundCvNumber,
+    String? refundOriginTerminal,
   }) {
     return Transaction(
       result: result ?? this.result,
@@ -103,6 +112,10 @@ class Transaction {
           printMerchantPreference ?? this.printMerchantPreference,
       orderId: orderId ?? this.orderId,
       pixPayloadResponse: pixPayloadResponse ?? this.pixPayloadResponse,
+      refundTransactionDate:
+          refundTransactionDate ?? this.refundTransactionDate,
+      refundCvNumber: refundCvNumber ?? this.refundCvNumber,
+      refundOriginTerminal: refundOriginTerminal ?? this.refundOriginTerminal,
     );
   }
 
@@ -131,6 +144,9 @@ class Transaction {
       'printMerchantPreference': printMerchantPreference,
       'orderId': orderId,
       'pixPayloadResponse': pixPayloadResponse,
+      'refundTransactionDate': refundTransactionDate,
+      'refundCvNumber': refundCvNumber,
+      'refundOriginTerminal': refundOriginTerminal,
     };
   }
 
@@ -182,6 +198,15 @@ class Transaction {
       pixPayloadResponse: map['pixPayloadResponse'] != null
           ? map['pixPayloadResponse'] as String
           : null,
+      refundTransactionDate: map['refundTransactionDate'] != null
+          ? map['refundTransactionDate'] as String
+          : null,
+      refundCvNumber: map['refundCvNumber'] != null
+          ? map['refundCvNumber'] as String
+          : null,
+      refundOriginTerminal: map['refundOriginTerminal'] != null
+          ? map['refundOriginTerminal'] as String
+          : null,
     );
   }
 
@@ -192,7 +217,7 @@ class Transaction {
 
   @override
   String toString() {
-    return 'Transaction(result: $result, resultDetails: $resultDetails, amount: $amount, callerId: $callerId, nsu: $nsu, nsuLastSuccesfullMessage: $nsuLastSuccesfullMessage, cvNumber: $cvNumber, receiptAlreadyPrinted: $receiptAlreadyPrinted, type: $type, inputType: $inputType, installments: $installments, gmtDateTime: $gmtDateTime, nsuLocal: $nsuLocal, authorizationCode: $authorizationCode, cardBin: $cardBin, cardLastDigits: $cardLastDigits, extraScreensResult: $extraScreensResult, splitPayloadResponse: $splitPayloadResponse, cardholderName: $cardholderName, automationSlip: $automationSlip, printMerchantPreference: $printMerchantPreference, orderId: $orderId, pixPayloadResponse: $pixPayloadResponse)';
+    return 'Transaction(result: $result, resultDetails: $resultDetails, amount: $amount, callerId: $callerId, nsu: $nsu, nsuLastSuccesfullMessage: $nsuLastSuccesfullMessage, cvNumber: $cvNumber, receiptAlreadyPrinted: $receiptAlreadyPrinted, type: $type, inputType: $inputType, installments: $installments, gmtDateTime: $gmtDateTime, nsuLocal: $nsuLocal, authorizationCode: $authorizationCode, cardBin: $cardBin, cardLastDigits: $cardLastDigits, extraScreensResult: $extraScreensResult, splitPayloadResponse: $splitPayloadResponse, cardholderName: $cardholderName, automationSlip: $automationSlip, printMerchantPreference: $printMerchantPreference, orderId: $orderId, pixPayloadResponse: $pixPayloadResponse, refundTransactionDate: $refundTransactionDate, refundCvNumber: $refundCvNumber, refundOriginTerminal: $refundOriginTerminal)';
   }
 
   @override
@@ -221,7 +246,10 @@ class Transaction {
         other.automationSlip == automationSlip &&
         other.printMerchantPreference == printMerchantPreference &&
         other.orderId == orderId &&
-        other.pixPayloadResponse == pixPayloadResponse;
+        other.pixPayloadResponse == pixPayloadResponse &&
+        other.refundTransactionDate == refundTransactionDate &&
+        other.refundCvNumber == refundCvNumber &&
+        other.refundOriginTerminal == refundOriginTerminal;
   }
 
   @override
@@ -248,6 +276,9 @@ class Transaction {
         automationSlip.hashCode ^
         printMerchantPreference.hashCode ^
         orderId.hashCode ^
-        pixPayloadResponse.hashCode;
+        pixPayloadResponse.hashCode ^
+        refundTransactionDate.hashCode ^
+        refundCvNumber.hashCode ^
+        refundOriginTerminal.hashCode;
   }
 }
