@@ -68,7 +68,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
         val amount = call.argument<Double>("amount")
         val transactionDate = call.argument<String>("transactionDate")
         val cvNumber = call.argument<String>("cvNumber")
-        val originalTerminal = call.argument<String>("originalTerminal")
+        val originTerminal = call.argument<String>("originTerminal")
 
         if (amount == null || amount <= 0) {
             result.error("INVALID_ARGUMENTS", "Invalid amount provided", null)
@@ -90,6 +90,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
             .appendPath("v1")
             .appendPath("refund")
             .appendQueryParameter("amount", amountFormatted)
+            .appendQueryParameter("allowPrintCurrentTransaction", "false")
             
         if (!transactionDate.isNullOrEmpty()) {
             uriBuilder.appendQueryParameter("transactionDate", transactionDate)
@@ -99,8 +100,8 @@ class DeeplinkUsecase(private val activity: Activity?) {
             uriBuilder.appendQueryParameter("cvNumber", cvNumber)
         }
 
-        if (!originalTerminal.isNullOrEmpty()) {
-            uriBuilder.appendQueryParameter("originalTerminal", originalTerminal)
+        if (!originTerminal.isNullOrEmpty()) {
+            uriBuilder.appendQueryParameter("originTerminal", originTerminal)
         }
 
         val deeplinkUri = uriBuilder.build()

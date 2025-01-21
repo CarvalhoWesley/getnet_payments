@@ -55,7 +55,7 @@ class MethodChannelGetnetDeeplinkPayments
     required double amount,
     DateTime? transactionDate,
     String? cvNumber,
-    String? originalTerminal,
+    String? originTerminal,
   }) async {
     try {
       if (_paymentInProgress) {
@@ -72,7 +72,7 @@ class MethodChannelGetnetDeeplinkPayments
               ? DateFormat('dd/MM/yy').format(transactionDate)
               : null,
           'cvNumber': cvNumber,
-          'originalTerminal': originalTerminal,
+          'originTerminal': originTerminal,
         },
       );
 

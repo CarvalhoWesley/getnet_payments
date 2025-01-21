@@ -184,7 +184,7 @@ class _PaymentAppState extends State<PaymentApp>
                                 amount: _convertAmount(transaction),
                                 transactionDate: DateTime.now(),
                                 cvNumber: transaction.cvNumber,
-                                originalTerminal: '10005105',
+                                originTerminal: '10005105',
                               );
 
                               if (refund != null) {

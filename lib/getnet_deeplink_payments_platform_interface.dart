@@ -23,6 +23,6 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     required double amount,
     DateTime? transactionDate,
     String? cvNumber,
-    String? originalTerminal,
+    String? originTerminal,
   });
 }

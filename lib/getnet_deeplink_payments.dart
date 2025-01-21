@@ -38,7 +38,7 @@ class GetnetDeeplinkPayments {
     required double amount,
     DateTime? transactionDate,
     String? cvNumber,
-    String? originalTerminal,
+    String? originTerminal,
   }) async {
     assert(amount > 0, 'O valor da compra deve ser maior que zero');
 
@@ -48,7 +48,7 @@ class GetnetDeeplinkPayments {
         amount: amount,
         transactionDate: transactionDate,
         cvNumber: cvNumber,
-        originalTerminal: originalTerminal,
+        originTerminal: originTerminal,
       );
     } catch (e) {
       // Emitir erro pelo stream
