@@ -1,6 +1,6 @@
 name: getnet_payments
-description: Este pacote é um plugin que fornece integração com as máquinas de pagamento da empresa Getnet.
-version: 0.0.1
+description: getnet_payments é um plugin que fornece integração com as máquinas de pagamento da empresa Getnet.
+version: 0.0.2
 homepage: https://github.com/CarvalhoWesley/getnet_payments
 
 environment:
