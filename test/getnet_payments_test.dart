@@ -6,7 +6,22 @@ import 'package:mockito/mockito.dart';
 import 'package:getnet_payments/getnet_deeplink_payments.dart';
 
 class MockGetnetDeeplinkPaymentsPlatform extends Mock
-    implements GetnetDeeplinkPaymentsPlatform {}
+    implements GetnetDeeplinkPaymentsPlatform {
+  @override
+  Future<Transaction?> payment({
+    required double amount,
+    required PaymentTypeEnum paymentType,
+    required String callerId,
+    int installments = 1,
+    String? creditType,
+  }) async {
+    return super.noSuchMethod(
+      Invocation.method(
+          #payment, [amount, paymentType, callerId, installments, creditType]),
+      returnValue: Transaction(result: '0', callerId: '123'),
+    );
+  }
+}
 
 void main() {
   group('GetnetDeeplinkPayments', () {
@@ -49,19 +64,18 @@ void main() {
         callerId: '123',
       );
 
-      when(await mockPlatform.payment(
+      when(mockPlatform.payment(
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 1,
-      ))
-          .thenAnswer((_) => mockTransaction);
+        installments: 2,
+      )).thenAnswer((_) async => mockTransaction);
 
       final result = await getnetPayments.payment(
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 2,
+        installments: 2,
       );
 
       expect(result, isNotNull);
@@ -71,7 +85,7 @@ void main() {
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 2,
+        installments: 2,
       )).called(1);
     });
   });
