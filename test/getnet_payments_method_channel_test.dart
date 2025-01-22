@@ -53,7 +53,8 @@ void main() {
       'amount': 100.0,
       'paymentType': PaymentTypeEnum.credit.value,
       'callerId': '123',
-      'installment': 1,
+      'installments': 1,
+      'creditType': null,
     });
   });
 

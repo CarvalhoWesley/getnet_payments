@@ -13,9 +13,11 @@ class MockGetnetDeeplinkPaymentsPlatform extends Mock
     required PaymentTypeEnum paymentType,
     required String callerId,
     int installments = 1,
+    String? creditType,
   }) async {
     return super.noSuchMethod(
-      Invocation.method(#payment, [amount, paymentType, callerId, installments]),
+      Invocation.method(
+          #payment, [amount, paymentType, callerId, installments, creditType]),
       returnValue: Transaction(result: '0', callerId: '123'),
     );
   }
