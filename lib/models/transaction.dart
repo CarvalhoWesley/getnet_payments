@@ -252,8 +252,10 @@ class Transaction {
           ? map['cardholderName'] as String
           : null,
       automationSlip: map['automationSlip'] != null
-          ? AutomationSlip.fromMap(
-              map['automationSlip'] as Map<String, dynamic>)
+          ? map['automationSlip'] is String
+              ? AutomationSlip.fromJson(map['automationSlip'] as String)
+              : AutomationSlip.fromMap(
+                  map['automationSlip'] as Map<String, dynamic>)
           : null,
       printMerchantPreference: map['printMerchantPreference'] != null
           ? map['printMerchantPreference'] as bool
