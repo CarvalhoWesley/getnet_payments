@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:getnet_payments/enums/payment_type_enum.dart';
+import 'package:getnet_payments/enums/transaction_result_enum.dart';
 import 'package:getnet_payments/getnet_payments.dart';
 import 'package:getnet_payments/models/transaction.dart';
 import 'package:uuid/uuid.dart';
@@ -50,7 +51,11 @@ class _PaymentAppState extends State<PaymentApp>
     });
   }
 
-  Future<void> _processPayment(PaymentTypeEnum type, String typeName) async {
+  Future<void> _processPayment(
+    PaymentTypeEnum type, {
+    int installments = 1,
+    String? creditType,
+  }) async {
     FocusScope.of(context).unfocus();
     if (valueController.text.isEmpty) return;
 
@@ -60,6 +65,8 @@ class _PaymentAppState extends State<PaymentApp>
         amount: valor,
         paymentType: type,
         callerId: const Uuid().v4(),
+        installments: installments,
+        creditType: creditType,
       );
       if (transaction != null) {
         setState(() {
@@ -113,23 +120,27 @@ class _PaymentAppState extends State<PaymentApp>
                   runSpacing: 8,
                   children: [
                     ElevatedButton(
-                      onPressed: () =>
-                          _processPayment(PaymentTypeEnum.credit, 'Crédito'),
+                      onPressed: () => _processPayment(PaymentTypeEnum.credit),
                       child: const Text('CRÉDITO'),
                     ),
                     ElevatedButton(
-                      onPressed: () =>
-                          _processPayment(PaymentTypeEnum.debit, 'Débito'),
+                      onPressed: () => _processPayment(
+                        PaymentTypeEnum.credit,
+                        installments: 12,
+                        creditType: 'creditMerchant',
+                      ),
+                      child: const Text('CRÉDITO 2X'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _processPayment(PaymentTypeEnum.debit),
                       child: const Text('DÉBITO'),
                     ),
                     ElevatedButton(
-                      onPressed: () =>
-                          _processPayment(PaymentTypeEnum.voucher, 'Voucher'),
+                      onPressed: () => _processPayment(PaymentTypeEnum.voucher),
                       child: const Text('VOUCHER'),
                     ),
                     ElevatedButton(
-                      onPressed: () =>
-                          _processPayment(PaymentTypeEnum.pix, 'PIX'),
+                      onPressed: () => _processPayment(PaymentTypeEnum.pix),
                       child: const Text('PIX'),
                     ),
                   ],
@@ -173,10 +184,8 @@ class _PaymentAppState extends State<PaymentApp>
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListTile(
-                          title: Text(
-                              '${transaction.type} - ${transaction.result}'),
-                          subtitle: Text(
-                              '${transaction.resultDetails}\nData: ${transaction.gmtDateTime}'),
+                          title: Text('${transaction.type}'),
+                          subtitle: Text('${transaction.resultDetails}'),
                           trailing: ElevatedButton(
                             onPressed: () async {
                               final refund =
@@ -184,7 +193,6 @@ class _PaymentAppState extends State<PaymentApp>
                                 amount: _convertAmount(transaction),
                                 transactionDate: DateTime.now(),
                                 cvNumber: transaction.cvNumber,
-                                originTerminal: '10005105',
                               );
 
                               if (refund != null) {
@@ -192,6 +200,11 @@ class _PaymentAppState extends State<PaymentApp>
                                   mensagemReembolso =
                                       '${refund.result} - ${refund.resultDetails}';
                                 });
+
+                                if (refund.result ==
+                                    TransactionResultEnum.success.value) {
+                                  _successfulTransactions.removeAt(index);
+                                }
                               }
                             },
                             child: const Text('Reembolsar'),

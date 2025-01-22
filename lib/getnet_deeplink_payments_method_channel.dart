@@ -29,8 +29,8 @@ class MethodChannelGetnetDeeplinkPayments
   /// [amount] is the payment amount and must be greater than zero.
   /// [paymentType] specifies the type of payment (credit or debit).
   /// [callerId] is the transaction identifier and cannot be empty.
-  /// [installment] specifies the number of installments (between 1 and 12).
-  ///
+  /// [installments] specifies the number of installments (between 1 and 12).
+  /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
   /// Returns a [Transaction] object containing the transaction details, or
   /// `null` if a transaction is already in progress or if the result is `null`.
   ///
@@ -40,7 +40,8 @@ class MethodChannelGetnetDeeplinkPayments
     required double amount,
     required PaymentTypeEnum paymentType,
     required String callerId,
-    int installment = 1,
+    int installments = 1,
+    String? creditType,
   }) async {
     try {
       if (_paymentInProgress) {
@@ -55,7 +56,8 @@ class MethodChannelGetnetDeeplinkPayments
           'amount': amount,
           'paymentType': paymentType.value,
           'callerId': callerId,
-          'installment': installment,
+          'installments': installments,
+          'creditType': creditType,
         },
       );
 

@@ -15,7 +15,8 @@ class GetnetDeeplinkPayments {
   /// [amount] is the payment amount and must be greater than zero.
   /// [paymentType] specifies the type of payment (credit or debit).
   /// [callerId] is the transaction identifier and cannot be empty.
-  /// [installment] specifies the number of installments (between 1 and 12).
+  /// [installments] specifies the number of installments (between 1 and 12).
+  /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
   /// For debit payments, this value must always be 1.
   ///
   /// Returns a [Transaction] object containing transaction details, or
@@ -23,21 +24,22 @@ class GetnetDeeplinkPayments {
   ///
   /// Throws an exception if:
   /// - [amount] is less than or equal to 0.
-  /// - [installment] is less than 1 or greater than 12.
+  /// - [installments] is less than 1 or greater than 12.
   /// - [callerId] is empty.
   /// - The number of installments is not 1 for debit payment types.
   Future<Transaction?> payment({
     required double amount,
     required PaymentTypeEnum paymentType,
     required String callerId,
-    int installment = 1,
+    int installments = 1,
+    String? creditType,
   }) async {
     assert(amount > 0, 'The payment amount must be greater than zero');
-    assert(installment > 0 && installment <= 12,
+    assert(installments > 0 && installments <= 12,
         'The number of installments must be between 1 and 12');
     assert(callerId.isNotEmpty, 'The client identifier cannot be empty');
     if (paymentType == PaymentTypeEnum.debit) {
-      assert(installment == 1, 'Installments must equal 1 for debit payments');
+      assert(installments == 1, 'Installments must equal 1 for debit payments');
     }
 
     try {
@@ -46,7 +48,8 @@ class GetnetDeeplinkPayments {
         amount: amount,
         paymentType: paymentType,
         callerId: callerId,
-        installment: installment,
+        installments: installments,
+        creditType: creditType,
       );
     } catch (e) {
       // Emit the error through the stream

@@ -37,7 +37,7 @@ void main() {
       amount: 100.0,
       paymentType: PaymentTypeEnum.credit,
       callerId: '123',
-      installment: 1,
+      installments: 1,
     );
 
     // Verificando o resultado

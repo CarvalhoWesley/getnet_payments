@@ -18,7 +18,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
     fun doPayment(call: MethodCall, result: MethodChannel.Result) {
         val paymentType = call.argument<String>("paymentType")
         val creditType = call.argument<String>("creditType")
-        val installments = call.argument<Int>("installment")
+        val installments = call.argument<Int>("installments")
         val amount = call.argument<Double>("amount")
         val callerId = call.argument<String>("callerId")
 
@@ -45,12 +45,12 @@ class DeeplinkUsecase(private val activity: Activity?) {
             .appendQueryParameter("amount", amountFormatted)
             .appendQueryParameter("callerId", callerId)
 
-        if (!creditType.isNullOrEmpty()) {
-            uriBuilder.appendQueryParameter("creditType", creditType)
-        }
-
         if (installments != null && installments > 0) {
             uriBuilder.appendQueryParameter("installments", installments.toString())
+
+            if(installments > 1 && !creditType.isNullOrEmpty()){
+                uriBuilder.appendQueryParameter("creditType", creditType)
+            }
         }
 
         val deeplinkUri = uriBuilder.build()

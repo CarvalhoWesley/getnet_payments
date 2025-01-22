@@ -36,10 +36,10 @@ abstract class GetnetDeeplinkPaymentsPlatform {
   /// Processes a payment with the provided parameters.
   ///
   /// [amount] is the payment amount and must be greater than zero.
-  /// [paymentType] specifies the type of payment (credit or debit).
+  /// [paymentType] specifies the type of payment (credit, debit, voucher or pix).
   /// [callerId] is the transaction identifier and cannot be empty.
-  /// [installment] specifies the number of installments (between 1 and 12).
-  ///
+  /// [installments] specifies the number of installments.
+  /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
   /// Returns a [Transaction] object containing transaction details, or
   /// `null` if the transaction fails.
   ///
@@ -48,7 +48,8 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     required double amount,
     required PaymentTypeEnum paymentType,
     required String callerId,
-    int installment,
+    int installments,
+    String? creditType,
   });
 
   /// Processes a refund for a transaction with the provided parameters.

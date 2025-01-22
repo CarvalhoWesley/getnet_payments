@@ -12,10 +12,10 @@ class MockGetnetDeeplinkPaymentsPlatform extends Mock
     required double amount,
     required PaymentTypeEnum paymentType,
     required String callerId,
-    int installment = 1,
+    int installments = 1,
   }) async {
     return super.noSuchMethod(
-      Invocation.method(#payment, [amount, paymentType, callerId, installment]),
+      Invocation.method(#payment, [amount, paymentType, callerId, installments]),
       returnValue: Transaction(result: '0', callerId: '123'),
     );
   }
@@ -66,14 +66,14 @@ void main() {
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 2,
+        installments: 2,
       )).thenAnswer((_) async => mockTransaction);
 
       final result = await getnetPayments.payment(
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 2,
+        installments: 2,
       );
 
       expect(result, isNotNull);
@@ -83,7 +83,7 @@ void main() {
         amount: 100.0,
         paymentType: PaymentTypeEnum.credit,
         callerId: '123',
-        installment: 2,
+        installments: 2,
       )).called(1);
     });
   });
