@@ -7,7 +7,7 @@ class MandatoryEcFields {
   String? ecBody;
   String? nsuLocal;
   String? receiptTypeEc;
-  
+
   MandatoryEcFields({
     this.aid,
     this.arqc,
