@@ -13,8 +13,11 @@
 
 - Realize pagamentos via Getnet utilizando **deeplinks**.
 - Suporte a pagamentos nos modos **crédito**, **débito**, **voucher** e **PIX**.
-- Configuração para parcelamentos (até 12 vezes para crédito).
-- Retorno estruturado da transação com detalhes como **resultDetails**, **authorizationCode** e outros.
+- Configuração de parcelamentos.
+- Retorno estruturado da transação com detalhes como **calledId**, **authorizationCode** e outros.
+
+## Recomendações
+Recomendamos que você leia a [documentação oficial da Getnet](https://getstore.getnet.com.br/docs) para obter mais informações sobre a integração de pagamentos.
 
 ## Instalação
 
@@ -22,7 +25,7 @@ Adicione o plugin ao seu arquivo `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  getnet_payments: ^0.0.1
+  getnet_payments: any
 ```
 
 Em seguida, execute o comando:
@@ -72,13 +75,13 @@ void realizarPagamento() async {
     final transaction = await GetnetPayments.deeplink.payment(
       amount: 150.00,
       paymentType: PaymentTypeEnum.credit,
-      callerId: Uuid().v4(), // Identificador único do cliente
-      installment: 3, // Número de parcelas
+      callerId: Uuid().v4(), // Identificador único da transação
+      installment: 1, // Número de parcelas
     );
 
     if (transaction != null && transaction.result == "0") {
       print("Pagamento realizado com sucesso!");
-      print("ID da transação: ${transaction.nsu}");
+      print("ID da Transação: ${transaction.callerId}");
     } else {
       print("Pagamento cancelado ou falhou.");
     }
@@ -93,27 +96,72 @@ void realizarPagamento() async {
 | Parâmetro     | Tipo              | Descrição                                                                                                                |
 | ------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `amount`      | `double`          | Valor do pagamento (deve ser maior que zero).                                                                            |
-| `paymentType` | `PaymentTypeEnum` | Tipo de pagamento (`PaymentTypeEnum.credit`, `PaymentTypeEnum.debit`, `PaymentTypeEnum.voucher` ou `PaymentTypeEnum.pix` |
+| `paymentType` | `PaymentTypeEnum` | Tipo de pagamento (`PaymentTypeEnum.credit`, `PaymentTypeEnum.debit`, `PaymentTypeEnum.voucher` ou `PaymentTypeEnum.pix`) |
 | `callerId`    | `String`          | Identificador único do cliente.                                                                                          |
-| `installment` | `int`             | Número de parcelas (entre 1 e 12). Apenas 1 para pagamentos no débito.                                                   |
+| `installment` | `int`             | Número de parcelas. Apenas 1 para pagamentos no débito.                                                   |
 
 ### Retorno
 
-O método `payment` retorna um objeto `Transaction?` contendo as informações da transação.
+O método `payment` retorna um objeto `Transaction` contendo as informações da transação.
 
 #### Exemplo de Objeto `Transaction`
 
 ```json
 {
   "result": "0",
-  "amount": 150.0,
-  "type": "02 - Débito",
-  "installment": 3,
-  "callerId": "abcd123456"
+  "resultDetails": "TRANSACAO APROVADA",
+  "amount": "000000018975",
+  "callerId": "d68d27af-b830-41ab-876e-3ffe7b903504",
+  "nsu": "000000048",
+  "nsuLastSuccesfullMessage": "0212117132457",
+  "cvNumber": "000000048",
+  "receiptAlreadyPrinted": false,
+  "type": "11",
+  "inputType": "051",
+  "installments": null,
+  "gmtDateTime": "0122114101",
+  "nsuLocal": "000090",
+  "authorizationCode": "164550",
+  "cardBin": "123456",
+  "cardLastDigits": "1234",
+  "extraScreensResult": null,
+  "splitPayloadResponse": null,
+  "cardholderName": null,
+  "automationSlip": {
+    "mandatory_all_receipts_fields": {
+      "authorizationCode": "008532",
+      "brand": "MASTERCARD",
+      "cardLastDigits": "4283",
+      "city": "PORTO ALEGRE",
+      "ecDocument": "42.130.708/0001-07",
+      "ecName": "GETNET DEVELOPERS ESTAB",
+      "ecNumber": "000000000034567",
+      "letterTypeTransaction": "C",
+      "version": "XXX57.0005.0024",
+      "getnetLogo": "iVBORw0KGgoAAAANSUhEUgAAAPAAAAA...",
+      "dateTime": "09/15/21 17:35:59",
+      "nsu": "000000637",
+      "terminal": "10001593"
+    },
+    "mandatory_client_fields": {
+      "clientBody": "CREDITO A VISTA VALOR:         1,00",
+      "receiptTypeClient": "Via Cliente"
+    },
+    "mandatory_ec_fields": {
+      "aid": "A0000000041010",
+      "arqc": "77EE7FFDACF51DB9",
+      "ecBody": "CREDITO A VISTA VALOR:         1,00 TRANSACAO APROVADA MEDIANTE USO DE SENHA PESSOAL",
+      "nsuLocal": "000302",
+      "receiptTypeEc": "Via Estabelecimento"
+    }
+  },
+  "printMerchantPreference": true,
+  "orderId": null,
+  "pixPayloadResponse": null
 }
 ```
 
-## Enumeração `PaymentTypeEnum`
+## Enumerador `PaymentTypeEnum`
 
 | Valor     | Descrição              |
 | --------- | ---------------------- |
@@ -121,6 +169,17 @@ O método `payment` retorna um objeto `Transaction?` contendo as informações d
 | `debit`   | Pagamento no débito.   |
 | `voucher` | Pagamento com voucher. |
 | `pix`     | Pagamento com PIX.     |
+
+## Enumerador `TransactionResultEnum`
+
+| Valor     | Descrição              |
+| --------- | ---------------------- |
+| `0`       | Sucesso                |
+| `1`       | Negada                 |
+| `2`       | Cancelada              |
+| `3`       | Falha                  |
+| `4`       | Desconhecido           |
+| `5`       | Pendente               |
 
 ## Contribuição
 
