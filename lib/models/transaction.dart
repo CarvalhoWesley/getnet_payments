@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:getnet_payments/models/automation_slip.dart';
+
 /// The [Transaction] class represents the details of a transaction, including
 /// payment and refund data.
 ///
@@ -65,7 +67,7 @@ class Transaction {
   final String? cardholderName;
 
   /// The automation slip for the transaction, if applicable.
-  final String? automationSlip;
+  final AutomationSlip? automationSlip;
 
   /// Whether the merchant prefers to print the receipt.
   final bool? printMerchantPreference;
@@ -136,7 +138,7 @@ class Transaction {
     String? extraScreensResult,
     String? splitPayloadResponse,
     String? cardholderName,
-    String? automationSlip,
+    AutomationSlip? automationSlip,
     bool? printMerchantPreference,
     String? orderId,
     String? pixPayloadResponse,
@@ -200,7 +202,7 @@ class Transaction {
       'extraScreensResult': extraScreensResult,
       'splitPayloadResponse': splitPayloadResponse,
       'cardholderName': cardholderName,
-      'automationSlip': automationSlip,
+      'automationSlip': automationSlip?.toMap(),
       'printMerchantPreference': printMerchantPreference,
       'orderId': orderId,
       'pixPayloadResponse': pixPayloadResponse,
@@ -250,7 +252,8 @@ class Transaction {
           ? map['cardholderName'] as String
           : null,
       automationSlip: map['automationSlip'] != null
-          ? map['automationSlip'] as String
+          ? AutomationSlip.fromMap(
+              map['automationSlip'] as Map<String, dynamic>)
           : null,
       printMerchantPreference: map['printMerchantPreference'] != null
           ? map['printMerchantPreference'] as bool
