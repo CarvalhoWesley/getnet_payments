@@ -51,6 +51,18 @@ class _PaymentAppState extends State<PaymentApp>
     });
   }
 
+  double _convertAmount(Transaction transaction) {
+    final amountString = double.parse(transaction.amount!).toString();
+    final amountDouble =
+        double.parse(amountString.substring(0, amountString.length - 4));
+    return amountDouble;
+  }
+
+  void _processPrint() {
+    FocusScope.of(context).unfocus();
+    GetnetPayments.pos.print();
+  }
+
   Future<void> _processPayment(
     PaymentTypeEnum type, {
     int installments = 1,
@@ -143,6 +155,10 @@ class _PaymentAppState extends State<PaymentApp>
                       onPressed: () => _processPayment(PaymentTypeEnum.pix),
                       child: const Text('PIX'),
                     ),
+                    ElevatedButton(
+                      onPressed: () => _processPrint(),
+                      child: const Text('Imprimir'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -220,12 +236,5 @@ class _PaymentAppState extends State<PaymentApp>
         ],
       ),
     );
-  }
-
-  double _convertAmount(Transaction transaction) {
-    final amountString = double.parse(transaction.amount!).toString();
-    final amountDouble =
-        double.parse(amountString.substring(0, amountString.length - 4));
-    return amountDouble;
   }
 }
