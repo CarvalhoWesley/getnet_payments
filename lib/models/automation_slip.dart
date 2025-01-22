@@ -57,11 +57,8 @@ class AutomationSlip {
 
   String toJson() => json.encode(toMap());
 
-  factory AutomationSlip.fromJson(String source) {
-    final sanitizedSource = source.replaceAll('\n', '\\n');
-    return AutomationSlip.fromMap(
-        json.decode(sanitizedSource) as Map<String, dynamic>);
-  }
+  factory AutomationSlip.fromJson(String source) =>
+      AutomationSlip.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() =>
