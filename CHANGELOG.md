@@ -3,6 +3,7 @@
 ### Added
 
 - Communication with POS Hardware (Only Printer).
+- Method to reprint the last receipt.
 
 ## [0.0.2] - 2025-01-22
 
