@@ -90,4 +90,17 @@ class GetnetDeeplinkPayments {
       rethrow;
     }
   }
+
+  /// Reprints the last transaction receipt.
+  /// Returns a [String] containing the reprint result, or
+  /// `null` if the operation fails.
+  /// Throws an exception if an error occurs during platform communication.
+  /// This method is only available on Android.
+  Future<String?> reprint(){
+    try {
+      return GetnetDeeplinkPaymentsPlatform.instance.reprint();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

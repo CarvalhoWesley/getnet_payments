@@ -117,6 +117,25 @@ class DeeplinkUsecase(private val activity: Activity?) {
         }
     }
 
+    fun doReprint(call: MethodCall, result: MethodChannel.Result) {
+        // Construir a URI do deeplink
+        val uriBuilder = Uri.Builder()
+            .scheme("getnet")
+            .authority("pagamento")
+            .appendPath("v1")
+            .appendPath("reprint")
+        
+        val deeplinkUri = uriBuilder.build()
+        val intent = Intent(Intent.ACTION_VIEW, deeplinkUri)
+        pendingResult = result
+
+        try {
+            activity?.startActivityForResult(intent, REQUEST_CODE_PAYMENT)
+        } catch (e: Exception) {
+            result.error("DEEPLINK_ERROR", "Failed to open deeplink: ${e.localizedMessage}", null)
+        }
+    }
+
     fun handleActivityResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             val gson = Gson()

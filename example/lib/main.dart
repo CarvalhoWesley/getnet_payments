@@ -31,7 +31,7 @@ class PaymentApp extends StatefulWidget {
 class _PaymentAppState extends State<PaymentApp>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  TextEditingController valueController = TextEditingController();
+  TextEditingController valueController = TextEditingController(text: '12.50');
   String? mensagem;
   String? mensagemReembolso;
   final List<Transaction> _successfulTransactions = [];
@@ -127,6 +127,24 @@ class _PaymentAppState extends State<PaymentApp>
     }
   }
 
+  Future<void> _processReprintLastTransaction() async {
+    FocusScope.of(context).unfocus();
+
+    try {
+      final result = await GetnetPayments.deeplink.reprint();
+      if (result != null) {
+        setState(() {
+          mensagem = result;
+        });
+      }
+    } catch (e) {
+      log(e.toString());
+      setState(() {
+        mensagem = 'Erro ao realizar pagamento';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,7 +192,7 @@ class _PaymentAppState extends State<PaymentApp>
                         installments: 12,
                         creditType: 'creditMerchant',
                       ),
-                      child: const Text('CRÉDITO 2X'),
+                      child: const Text('CRÉDITO 12X'),
                     ),
                     ElevatedButton(
                       onPressed: () => _processPayment(PaymentTypeEnum.debit),
@@ -189,8 +207,12 @@ class _PaymentAppState extends State<PaymentApp>
                       child: const Text('PIX'),
                     ),
                     ElevatedButton(
+                      onPressed: () => _processReprintLastTransaction(),
+                      child: const Text('REIMPRIMIR ÚLTIMO CUPOM'),
+                    ),
+                    ElevatedButton(
                       onPressed: () => _processPrint(),
-                      child: const Text('Imprimir'),
+                      child: const Text('TESTAR IMPRESSORA'),
                     ),
                   ],
                 ),
