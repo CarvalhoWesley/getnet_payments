@@ -146,7 +146,7 @@ class MethodChannelGetnetDeeplinkPayments
       }
 
       _transactionInProgress = false;
-      
+
       final transaction = Transaction.fromJson(result);
 
       return transaction.result;

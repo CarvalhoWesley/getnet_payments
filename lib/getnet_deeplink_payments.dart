@@ -96,7 +96,7 @@ class GetnetDeeplinkPayments {
   /// `null` if the operation fails.
   /// Throws an exception if an error occurs during platform communication.
   /// This method is only available on Android.
-  Future<String?> reprint(){
+  Future<String?> reprint() {
     try {
       return GetnetDeeplinkPaymentsPlatform.instance.reprint();
     } catch (e) {
