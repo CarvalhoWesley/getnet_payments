@@ -22,7 +22,7 @@ class MethodChannelGetnetDeeplinkPayments
   final methodChannel = const MethodChannel('getnet_payments');
 
   /// Tracks whether a payment or refund operation is currently in progress.
-  bool _paymentInProgress = false;
+  bool _transactionInProgress = false;
 
   /// Processes a payment request via the native platform.
   ///
@@ -44,11 +44,11 @@ class MethodChannelGetnetDeeplinkPayments
     String? creditType,
   }) async {
     try {
-      if (_paymentInProgress) {
+      if (_transactionInProgress) {
         return null;
       }
 
-      _paymentInProgress = true;
+      _transactionInProgress = true;
 
       final result = await methodChannel.invokeMethod<String>(
         'paymentDeeplink',
@@ -65,11 +65,11 @@ class MethodChannelGetnetDeeplinkPayments
         return null;
       }
 
-      _paymentInProgress = false;
+      _transactionInProgress = false;
 
       return Transaction.fromJson(result);
     } catch (e) {
-      _paymentInProgress = false;
+      _transactionInProgress = false;
       rethrow;
     }
   }
@@ -94,11 +94,11 @@ class MethodChannelGetnetDeeplinkPayments
     String? originTerminal,
   }) async {
     try {
-      if (_paymentInProgress) {
+      if (_transactionInProgress) {
         return null;
       }
 
-      _paymentInProgress = true;
+      _transactionInProgress = true;
 
       final result = await methodChannel.invokeMethod<String>(
         'refundDeeplink',
@@ -116,11 +116,42 @@ class MethodChannelGetnetDeeplinkPayments
         return null;
       }
 
-      _paymentInProgress = false;
+      _transactionInProgress = false;
 
       return Transaction.fromJson(result);
     } catch (e) {
-      _paymentInProgress = false;
+      _transactionInProgress = false;
+      rethrow;
+    }
+  }
+
+  /// Reprints the last transaction receipt via the native platform.
+  /// Returns a [String] containing the reprint result, or `null` if the operation fails.
+  /// Throws an exception if an error occurs during platform communication.
+  /// This method is only available on Android.
+  @override
+  Future<String?> reprint() async {
+    try {
+      if (_transactionInProgress) {
+        return null;
+      }
+
+      _transactionInProgress = true;
+
+      final result =
+          await methodChannel.invokeMethod<String>('reprintDeeplink');
+
+      if (result == null) {
+        return null;
+      }
+
+      _transactionInProgress = false;
+
+      final transaction = Transaction.fromJson(result);
+
+      return transaction.result;
+    } catch (e) {
+      _transactionInProgress = false;
       rethrow;
     }
   }

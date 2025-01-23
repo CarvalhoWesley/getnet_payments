@@ -31,7 +31,7 @@ class PaymentApp extends StatefulWidget {
 class _PaymentAppState extends State<PaymentApp>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  TextEditingController valueController = TextEditingController();
+  TextEditingController valueController = TextEditingController(text: '12.50');
   String? mensagem;
   String? mensagemReembolso;
   final List<Transaction> _successfulTransactions = [];
@@ -45,14 +45,14 @@ class _PaymentAppState extends State<PaymentApp>
   void _addTransaction(Transaction transaction) {
     if (transaction.result != '0') return;
     setState(() {
-      _successfulTransactions.add(transaction);
+      _successfulTransactions.insert(0, transaction);
     });
   }
 
   double _convertAmount(Transaction transaction) {
-    final amountString = double.parse(transaction.amount!).toString();
-    final amountDouble =
-        double.parse(amountString.substring(0, amountString.length - 4));
+    final amount = transaction.amount;
+    final amountDouble = double.parse(
+        '${amount!.substring(0, amount.length - 2)}.${amount.substring(amount.length - 2)}');
     return amountDouble;
   }
 
@@ -127,6 +127,24 @@ class _PaymentAppState extends State<PaymentApp>
     }
   }
 
+  Future<void> _processReprintLastTransaction() async {
+    FocusScope.of(context).unfocus();
+
+    try {
+      final result = await GetnetPayments.deeplink.reprint();
+      if (result != null) {
+        setState(() {
+          mensagem = result;
+        });
+      }
+    } catch (e) {
+      log(e.toString());
+      setState(() {
+        mensagem = 'Erro ao realizar pagamento';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,7 +192,7 @@ class _PaymentAppState extends State<PaymentApp>
                         installments: 12,
                         creditType: 'creditMerchant',
                       ),
-                      child: const Text('CRÉDITO 2X'),
+                      child: const Text('CRÉDITO 12X'),
                     ),
                     ElevatedButton(
                       onPressed: () => _processPayment(PaymentTypeEnum.debit),
@@ -189,8 +207,12 @@ class _PaymentAppState extends State<PaymentApp>
                       child: const Text('PIX'),
                     ),
                     ElevatedButton(
+                      onPressed: () => _processReprintLastTransaction(),
+                      child: const Text('REIMPRIMIR ÚLTIMO CUPOM'),
+                    ),
+                    ElevatedButton(
                       onPressed: () => _processPrint(),
-                      child: const Text('Imprimir'),
+                      child: const Text('TESTAR IMPRESSORA'),
                     ),
                   ],
                 ),
@@ -233,8 +255,9 @@ class _PaymentAppState extends State<PaymentApp>
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListTile(
-                          title: Text('${transaction.type}'),
-                          subtitle: Text('${transaction.resultDetails}'),
+                          title: Text('CV: ${transaction.cvNumber}'),
+                          subtitle: Text(
+                              'Valor: ${_convertAmount(transaction).toStringAsFixed(2)}'),
                           trailing: ElevatedButton(
                             onPressed: () async {
                               final refund =

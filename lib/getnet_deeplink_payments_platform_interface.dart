@@ -69,4 +69,8 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     String? cvNumber,
     String? originTerminal,
   });
+
+  /// Reprints a last transaction receipt.
+  /// Returns a [String] containing the reprint result, or `null` if the operation fails.
+  Future<String?> reprint();
 }
