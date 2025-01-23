@@ -45,14 +45,14 @@ class _PaymentAppState extends State<PaymentApp>
   void _addTransaction(Transaction transaction) {
     if (transaction.result != '0') return;
     setState(() {
-      _successfulTransactions.add(transaction);
+      _successfulTransactions.insert(0, transaction);
     });
   }
 
   double _convertAmount(Transaction transaction) {
-    final amountString = double.parse(transaction.amount!).toString();
-    final amountDouble =
-        double.parse(amountString.substring(0, amountString.length - 4));
+    final amount = transaction.amount;
+    final amountDouble = double.parse(
+        '${amount!.substring(0, amount.length - 2)}.${amount.substring(amount.length - 2)}');
     return amountDouble;
   }
 
@@ -255,8 +255,9 @@ class _PaymentAppState extends State<PaymentApp>
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListTile(
-                          title: Text('${transaction.type}'),
-                          subtitle: Text('${transaction.resultDetails}'),
+                          title: Text('CV: ${transaction.cvNumber}'),
+                          subtitle: Text(
+                              'Valor: ${_convertAmount(transaction).toStringAsFixed(2)}'),
                           trailing: ElevatedButton(
                             onPressed: () async {
                               final refund =
