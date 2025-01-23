@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:getnet_payments/enums/payment_type_enum.dart';
-import 'package:getnet_payments/models/transaction.dart';
+import 'package:getnet_payments/enums/transaction/payment_type_enum.dart';
+import 'package:getnet_payments/models/transaction/transaction.dart';
 import 'package:intl/intl.dart';
 
 import 'getnet_deeplink_payments_platform_interface.dart';

@@ -1,6 +1,17 @@
 import 'package:getnet_payments/getnet_deeplink_payments.dart';
 import 'package:getnet_payments/getnet_pos.dart';
 
+export 'enums/transaction/payment_type_enum.dart';
+export 'enums/transaction/transaction_result_enum.dart';
+export 'enums/pos/align_mode_enum.dart';
+export 'enums/pos/font_format_enum.dart';
+export 'models/transaction/automation_slip.dart';
+export 'models/transaction/mandatory_all_receipts_fields.dart';
+export 'models/transaction/mandatory_client_fields.dart';
+export 'models/transaction/mandatory_ec_fields.dart';
+export 'models/transaction/transaction.dart';
+export 'models/pos/item_print_model.dart';
+
 /// The [GetnetPayments] class serves as a facade for accessing and
 /// managing instances of [GetnetDeeplinkPayments].
 ///

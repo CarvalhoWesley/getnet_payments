@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:getnet_payments/getnet_pos_platform_interface.dart';
+import 'package:getnet_payments/models/pos/item_print_model.dart';
 
 class MethodChannelGetnetPos extends GetnetPosPlatform {
   @visibleForTesting
@@ -9,47 +10,24 @@ class MethodChannelGetnetPos extends GetnetPosPlatform {
   bool _printInProgress = false;
 
   @override
-  Future<String?> print() async {
+  Future<String?> print(List<ItemPrintModel> items) async {
     try {
       if (_printInProgress) {
         return null;
       }
 
+      if (items.isEmpty) {
+        return null;
+      }
+
       _printInProgress = true;
 
-      final result = await methodChannel.invokeMethod<String?>(
-        'print',
-        <String, dynamic>{
-          "instructions": [
-            {
-              "type": "text",
-              "align": "CENTER",
-              "fontFormat": "SMALL",
-              "content": "TEXTO SMALL CENTRALIZADO",
-            },
-            {
-              "type": "text",
-              "align": "CENTER",
-              "fontFormat": "MEDIUM",
-              "content": "TEXTO MEDIUM CENTRALIZADO",
-            },
-            {
-              "type": "text",
-              "align": "CENTER",
-              "fontFormat": "LARGE",
-              "content": "TEXTO LARGE CENTRALIZADO"
-            },
-            {
-              "type": "qrcode",
-              "align": "CENTER",
-              "content": "https://example.com",
-              "height": 200
-            },
-            {"type": "barcode", "align": "RIGHT", "content": "123456789012"},
-            {"type": "linewrap", "lines": 2},
-          ]
-        },
-      );
+      final itemsMaps =
+          items.map((instruction) => instruction.toMap()).toList();
+
+      final result =
+          await methodChannel.invokeMethod<String?>('print', itemsMaps);
+
       _printInProgress = false;
       return result;
     } catch (e) {

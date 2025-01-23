@@ -62,7 +62,9 @@ class PosUsecase(private val context: Context) {
     }
 
     fun print(call: MethodCall, result: MethodChannel.Result) {
-        val instructions = call.argument<List<Map<String, Any>>>("instructions")
+        val instructions = call.arguments as? List<Map<String, Any>>
+                ?: throw JSONException("Invalid or missing instruction list.")
+
         if (instructions.isNullOrEmpty()) {
             result.error("INVALID_ARGUMENTS", "Instructions list cannot be null or empty.", null)
             return
@@ -121,15 +123,15 @@ class PosUsecase(private val context: Context) {
                 val content = instruction["content"] as? String ?: throw JSONException("Barcode instruction must have 'content'.")
                 PosDigital.getInstance().getPrinter().addBarCode(align, content)
             }
-            "linewrap" -> {
-                var lines = (instruction["lines"] as? Int) ?: 1
-                while (lines-- > 0)
-                    PosDigital.getInstance().getPrinter().addText(align, "\n")
-            }
             "image" -> {
                 val base64Image = instruction["content"] as? String ?: throw JSONException("Image instruction must have 'content'.")
                 val bitmap = decodeBase64ToBitmap(base64Image)
                 PosDigital.getInstance().getPrinter().addImageBitmap(align, bitmap)
+            }
+            "linewrap" -> {
+                var lines = (instruction["lines"] as? Int) ?: 1
+                while (lines-- > 0)
+                    PosDigital.getInstance().getPrinter().addText(align, "\n")
             }
             else -> {
                 throw JSONException("Unsupported instruction type: $type")

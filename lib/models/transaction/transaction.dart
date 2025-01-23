@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:getnet_payments/models/automation_slip.dart';
+import 'package:getnet_payments/models/transaction/automation_slip.dart';
 
 /// The [Transaction] class represents the details of a transaction, including
 /// payment and refund data.
