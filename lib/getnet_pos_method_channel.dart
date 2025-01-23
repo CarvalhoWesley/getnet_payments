@@ -31,7 +31,7 @@ class MethodChannelGetnetPos extends GetnetPosPlatform {
   /// Tracks whether a print operation is currently in progress.
   ///
   /// This prevents multiple concurrent print operations.
-  bool _printInProgress = false;
+  bool printInProgress = false;
 
   /// Sends a list of print instructions to the native platform via the method channel.
   ///
@@ -62,7 +62,7 @@ class MethodChannelGetnetPos extends GetnetPosPlatform {
   @override
   Future<String?> print(List<ItemPrintModel> items) async {
     try {
-      if (_printInProgress) {
+      if (printInProgress) {
         return null; // Prevent concurrent print operations
       }
 
@@ -70,7 +70,7 @@ class MethodChannelGetnetPos extends GetnetPosPlatform {
         return null; // No instructions provided
       }
 
-      _printInProgress = true;
+      printInProgress = true;
 
       // Convert the items to a list of maps for platform communication
       final itemsMaps =
@@ -80,10 +80,10 @@ class MethodChannelGetnetPos extends GetnetPosPlatform {
       final result =
           await methodChannel.invokeMethod<String?>('print', itemsMaps);
 
-      _printInProgress = false;
+      printInProgress = false;
       return result;
     } catch (e) {
-      _printInProgress = false;
+      printInProgress = false;
       rethrow;
     }
   }
