@@ -1,11 +1,9 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:getnet_payments/enums/payment_type_enum.dart';
-import 'package:getnet_payments/enums/transaction_result_enum.dart';
 import 'package:getnet_payments/getnet_payments.dart';
-import 'package:getnet_payments/models/transaction.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -33,7 +31,7 @@ class PaymentApp extends StatefulWidget {
 class _PaymentAppState extends State<PaymentApp>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  TextEditingController valueController = TextEditingController();
+  TextEditingController valueController = TextEditingController(text: '12.50');
   String? mensagem;
   String? mensagemReembolso;
   final List<Transaction> _successfulTransactions = [];
@@ -47,8 +45,55 @@ class _PaymentAppState extends State<PaymentApp>
   void _addTransaction(Transaction transaction) {
     if (transaction.result != '0') return;
     setState(() {
-      _successfulTransactions.add(transaction);
+      _successfulTransactions.insert(0, transaction);
     });
+  }
+
+  double _convertAmount(Transaction transaction) {
+    final amount = transaction.amount;
+    final amountDouble = double.parse(
+        '${amount!.substring(0, amount.length - 2)}.${amount.substring(amount.length - 2)}');
+    return amountDouble;
+  }
+
+  Future<void> _processPrint() async {
+    FocusScope.of(context).unfocus();
+
+    final logo = await rootBundle.load('assets/images/logo.jpg');
+    String base64 = base64Encode(logo.buffer.asUint8List());
+
+    final items = [
+      ItemPrintModel.text(
+        content: "TEXTO SMALL CENTRALIZADO",
+        align: AlignModeEnum.center,
+        fontFormat: FontFormatEnum.small,
+      ),
+      ItemPrintModel.text(
+        content: "TEXTO MEDIUM CENTRALIZADO",
+        align: AlignModeEnum.center,
+        fontFormat: FontFormatEnum.medium,
+      ),
+      ItemPrintModel.text(
+        content: "TEXTO LARGE CENTRALIZADO",
+        align: AlignModeEnum.center,
+        fontFormat: FontFormatEnum.large,
+      ),
+      ItemPrintModel.qrcode(
+        content: "https://example.com",
+        align: AlignModeEnum.center,
+        height: 200,
+      ),
+      ItemPrintModel.barcode(
+        content: "123456789012",
+        align: AlignModeEnum.right,
+      ),
+      ItemPrintModel.image(
+        content: base64,
+        align: AlignModeEnum.center,
+      ),
+      ItemPrintModel.linewrap(lines: 2),
+    ];
+    GetnetPayments.pos.print(items);
   }
 
   Future<void> _processPayment(
@@ -73,6 +118,24 @@ class _PaymentAppState extends State<PaymentApp>
           mensagem = '${transaction.result} - ${transaction.resultDetails}';
         });
         _addTransaction(transaction);
+      }
+    } catch (e) {
+      log(e.toString());
+      setState(() {
+        mensagem = 'Erro ao realizar pagamento';
+      });
+    }
+  }
+
+  Future<void> _processReprintLastTransaction() async {
+    FocusScope.of(context).unfocus();
+
+    try {
+      final result = await GetnetPayments.deeplink.reprint();
+      if (result != null) {
+        setState(() {
+          mensagem = result;
+        });
       }
     } catch (e) {
       log(e.toString());
@@ -129,7 +192,7 @@ class _PaymentAppState extends State<PaymentApp>
                         installments: 12,
                         creditType: 'creditMerchant',
                       ),
-                      child: const Text('CRÉDITO 2X'),
+                      child: const Text('CRÉDITO 12X'),
                     ),
                     ElevatedButton(
                       onPressed: () => _processPayment(PaymentTypeEnum.debit),
@@ -142,6 +205,14 @@ class _PaymentAppState extends State<PaymentApp>
                     ElevatedButton(
                       onPressed: () => _processPayment(PaymentTypeEnum.pix),
                       child: const Text('PIX'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _processReprintLastTransaction(),
+                      child: const Text('REIMPRIMIR ÚLTIMO CUPOM'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _processPrint(),
+                      child: const Text('TESTAR IMPRESSORA'),
                     ),
                   ],
                 ),
@@ -184,8 +255,9 @@ class _PaymentAppState extends State<PaymentApp>
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListTile(
-                          title: Text('${transaction.type}'),
-                          subtitle: Text('${transaction.resultDetails}'),
+                          title: Text('CV: ${transaction.cvNumber}'),
+                          subtitle: Text(
+                              'Valor: ${_convertAmount(transaction).toStringAsFixed(2)}'),
                           trailing: ElevatedButton(
                             onPressed: () async {
                               final refund =
@@ -220,12 +292,5 @@ class _PaymentAppState extends State<PaymentApp>
         ],
       ),
     );
-  }
-
-  double _convertAmount(Transaction transaction) {
-    final amountString = double.parse(transaction.amount!).toString();
-    final amountDouble =
-        double.parse(amountString.substring(0, amountString.length - 4));
-    return amountDouble;
   }
 }

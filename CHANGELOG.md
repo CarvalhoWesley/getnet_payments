@@ -1,10 +1,17 @@
+## [0.0.3] - 2025-01-23
+
+### Added
+
+- Communication with POS Hardware (Only Printer).
+- Method to reprint the last receipt.
+
 ## [0.0.2] - 2025-01-22
 
 ### Added
 
-- Added `creditType` param to payment method.
-- Added new subclasses in Transaction class.
-- Added refund feature.
+- `creditType` param to payment method.
+- new subclasses in Transaction class.
+- refund feature.
 
 #### Example :
 ```dart

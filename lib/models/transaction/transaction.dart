@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:getnet_payments/models/automation_slip.dart';
+import 'package:getnet_payments/models/transaction/automation_slip.dart';
 
 /// The [Transaction] class represents the details of a transaction, including
 /// payment and refund data.
@@ -252,10 +252,8 @@ class Transaction {
           ? map['cardholderName'] as String
           : null,
       automationSlip: map['automationSlip'] != null
-          ? map['automationSlip'] is String
-              ? AutomationSlip.fromJson(map['automationSlip'] as String)
-              : AutomationSlip.fromMap(
-                  map['automationSlip'] as Map<String, dynamic>)
+          ? AutomationSlip.fromMap(
+              map['automationSlip'] as Map<String, dynamic>)
           : null,
       printMerchantPreference: map['printMerchantPreference'] != null
           ? map['printMerchantPreference'] as bool
@@ -283,11 +281,13 @@ class Transaction {
   factory Transaction.fromJson(String source) =>
       Transaction.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  /// Returns a string representation of the instance.
   @override
   String toString() {
     return 'Transaction(result: $result, resultDetails: $resultDetails, amount: $amount, callerId: $callerId, nsu: $nsu, nsuLastSuccesfullMessage: $nsuLastSuccesfullMessage, cvNumber: $cvNumber, receiptAlreadyPrinted: $receiptAlreadyPrinted, type: $type, inputType: $inputType, installments: $installments, gmtDateTime: $gmtDateTime, nsuLocal: $nsuLocal, authorizationCode: $authorizationCode, cardBin: $cardBin, cardLastDigits: $cardLastDigits, extraScreensResult: $extraScreensResult, splitPayloadResponse: $splitPayloadResponse, cardholderName: $cardholderName, automationSlip: $automationSlip, printMerchantPreference: $printMerchantPreference, orderId: $orderId, pixPayloadResponse: $pixPayloadResponse, refundTransactionDate: $refundTransactionDate, refundCvNumber: $refundCvNumber, refundOriginTerminal: $refundOriginTerminal)';
   }
 
+  /// Compares the current instance with another [Transaction] instance.
   @override
   bool operator ==(covariant Transaction other) {
     if (identical(this, other)) return true;
@@ -320,6 +320,7 @@ class Transaction {
         other.refundOriginTerminal == refundOriginTerminal;
   }
 
+  /// Generates a hash code for the instance.
   @override
   int get hashCode {
     return result.hashCode ^

@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:getnet_payments/models/mandatory_all_receipts_fields.dart';
-import 'package:getnet_payments/models/mandatory_client_fields.dart';
-import 'package:getnet_payments/models/mandatory_ec_fields.dart';
+import 'package:getnet_payments/models/transaction/mandatory_all_receipts_fields.dart';
+import 'package:getnet_payments/models/transaction/mandatory_client_fields.dart';
+import 'package:getnet_payments/models/transaction/mandatory_ec_fields.dart';
 
 class AutomationSlip {
   MandatoryAllReceiptsFields? mandatoryAllReceiptsFields;
@@ -57,11 +57,8 @@ class AutomationSlip {
 
   String toJson() => json.encode(toMap());
 
-  factory AutomationSlip.fromJson(String source) {
-    final sanitizedSource = source.replaceAll('\n', '\\n');
-    return AutomationSlip.fromMap(
-        json.decode(sanitizedSource) as Map<String, dynamic>);
-  }
+  factory AutomationSlip.fromJson(String source) =>
+      AutomationSlip.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() =>

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:getnet_payments/enums/payment_type_enum.dart';
+import 'package:getnet_payments/enums/transaction/payment_type_enum.dart';
 import 'package:getnet_payments/getnet_deeplink_payments_platform_interface.dart';
-import 'package:getnet_payments/models/transaction.dart';
+import 'package:getnet_payments/models/transaction/transaction.dart';
 
 /// The [GetnetDeeplinkPayments] class provides methods to perform
 /// payments and refunds using the Getnet platform via deeplinks.
@@ -87,6 +87,19 @@ class GetnetDeeplinkPayments {
       );
     } catch (e) {
       // Emit the error through the stream
+      rethrow;
+    }
+  }
+
+  /// Reprints the last transaction receipt.
+  /// Returns a [String] containing the reprint result, or
+  /// `null` if the operation fails.
+  /// Throws an exception if an error occurs during platform communication.
+  /// This method is only available on Android.
+  Future<String?> reprint() {
+    try {
+      return GetnetDeeplinkPaymentsPlatform.instance.reprint();
+    } catch (e) {
       rethrow;
     }
   }

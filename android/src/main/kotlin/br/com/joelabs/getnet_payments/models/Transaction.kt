@@ -1,0 +1,30 @@
+package br.com.joelabs.getnet_payments.models
+
+data class Transaction(
+    val result: String?,
+    val resultDetails: String?,
+    val amount: String?,
+    val callerId: String?,
+    val nsu: String?,
+    val nsuLastSuccesfullMessage: String?,
+    val cvNumber: String?,
+    val receiptAlreadyPrinted: Boolean?,
+    val type: String?,
+    val inputType: String?,
+    val installments: String?,
+    val gmtDateTime: String?,
+    val nsuLocal: String?,
+    val authorizationCode: String?,
+    val cardBin: String?,
+    val cardLastDigits: String?,
+    val extraScreensResult: String?,
+    val splitPayloadResponse: String?,
+    val cardholderName: String?,
+    val automationSlip: AutomationSlip?,
+    val printMerchantPreference: Boolean?,
+    val orderId: String?,
+    val pixPayloadResponse: String?,
+    val refundTransactionDate: String?,
+    val refundCvNumber: String?,
+    val refundOriginTerminal: String?
+)

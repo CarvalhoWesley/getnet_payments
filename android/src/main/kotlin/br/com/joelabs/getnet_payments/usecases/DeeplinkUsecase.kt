@@ -6,6 +6,8 @@ import android.net.Uri
 import io.flutter.plugin.common.MethodChannel
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodCall
+import br.com.joelabs.getnet_payments.models.AutomationSlip
+import br.com.joelabs.getnet_payments.models.Transaction
 
 class DeeplinkUsecase(private val activity: Activity?) {
 
@@ -115,38 +117,66 @@ class DeeplinkUsecase(private val activity: Activity?) {
         }
     }
 
+    fun doReprint(call: MethodCall, result: MethodChannel.Result) {
+        // Construir a URI do deeplink
+        val uriBuilder = Uri.Builder()
+            .scheme("getnet")
+            .authority("pagamento")
+            .appendPath("v1")
+            .appendPath("reprint")
+        
+        val deeplinkUri = uriBuilder.build()
+        val intent = Intent(Intent.ACTION_VIEW, deeplinkUri)
+        pendingResult = result
+
+        try {
+            activity?.startActivityForResult(intent, REQUEST_CODE_PAYMENT)
+        } catch (e: Exception) {
+            result.error("DEEPLINK_ERROR", "Failed to open deeplink: ${e.localizedMessage}", null)
+        }
+    }
+
     fun handleActivityResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            val transaction = mapOf(
-                "result" to data.getStringExtra("result"),
-                "resultDetails" to data.getStringExtra("resultDetails"),
-                "amount" to data.getStringExtra("amount"),
-                "callerId" to data.getStringExtra("callerId"),
-                "receiptAlreadyPrinted" to data.getBooleanExtra("receiptAlreadyPrinted", false),
-                "type" to data.getStringExtra("type"),
-                "inputType" to data.getStringExtra("inputType"),
-                "nsu" to data.getStringExtra("nsu"),
-                "nsuLastSuccesfullMessage" to data.getStringExtra("nsuLastSuccesfullMessage"),
-                "cvNumber" to data.getStringExtra("cvNumber"),
-                "brand" to data.getStringExtra("brand"),
-                "installments" to data.getStringExtra("installments"),
-                "gmtDateTime" to data.getStringExtra("gmtDateTime"),
-                "nsuLocal" to data.getStringExtra("nsuLocal"),
-                "authorizationCode" to data.getStringExtra("authorizationCode"),
-                "cardBin" to data.getStringExtra("cardBin"),
-                "cardLastDigits" to data.getStringExtra("cardLastDigits"),
-                "extraScreensResult" to data.getStringExtra("extraScreensResult"),
-                "splitPayloadResponse" to data.getStringExtra("splitPayloadResponse"),
-                "cardholderName" to data.getStringExtra("cardholderName"),
-                "automationSlip" to data.getStringExtra("automationSlip"),
-                "printMerchantPreference" to data.getBooleanExtra("printMerchantPreference", false),
-                "orderId" to data.getStringExtra("orderId"),
-                "pixPayloadResponse" to data.getStringExtra("pixPayloadResponse"),
-                "refundTransactionDate" to data.getStringExtra("refundTransactionDate"),
-                "refundCvNumber" to data.getStringExtra("refundCvNumber"),
-                "refundOriginTerminal" to data.getStringExtra("refundOriginTerminal")
-            )
             val gson = Gson()
+
+            // Converter automationSlip para objeto
+            val automationSlipJson = data.getStringExtra("automationSlip")
+            val automationSlip = automationSlipJson?.let {
+                gson.fromJson(it, AutomationSlip::class.java)
+            }
+
+            // Criar o objeto Transaction
+            val transaction = Transaction(
+                result = data.getStringExtra("result"),
+                resultDetails = data.getStringExtra("resultDetails"),
+                amount = data.getStringExtra("amount"),
+                callerId = data.getStringExtra("callerId"),
+                nsu = data.getStringExtra("nsu"),
+                nsuLastSuccesfullMessage = data.getStringExtra("nsuLastSuccesfullMessage"),
+                cvNumber = data.getStringExtra("cvNumber"),
+                receiptAlreadyPrinted = data.getBooleanExtra("receiptAlreadyPrinted", false),
+                type = data.getStringExtra("type"),
+                inputType = data.getStringExtra("inputType"),
+                installments = data.getStringExtra("installments"),
+                gmtDateTime = data.getStringExtra("gmtDateTime"),
+                nsuLocal = data.getStringExtra("nsuLocal"),
+                authorizationCode = data.getStringExtra("authorizationCode"),
+                cardBin = data.getStringExtra("cardBin"),
+                cardLastDigits = data.getStringExtra("cardLastDigits"),
+                extraScreensResult = data.getStringExtra("extraScreensResult"),
+                splitPayloadResponse = data.getStringExtra("splitPayloadResponse"),
+                cardholderName = data.getStringExtra("cardholderName"),
+                automationSlip = automationSlip,
+                printMerchantPreference = data.getBooleanExtra("printMerchantPreference", false),
+                orderId = data.getStringExtra("orderId"),
+                pixPayloadResponse = data.getStringExtra("pixPayloadResponse"),
+                refundTransactionDate = data.getStringExtra("refundTransactionDate"),
+                refundCvNumber = data.getStringExtra("refundCvNumber"),
+                refundOriginTerminal = data.getStringExtra("refundOriginTerminal")
+            )
+
+            // Converter para JSON e retornar o resultado
             val transactionJson = gson.toJson(transaction)
             pendingResult?.success(transactionJson)
         } else {
