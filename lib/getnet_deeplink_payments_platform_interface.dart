@@ -1,6 +1,6 @@
-import 'package:getnet_payments/enums/payment_type_enum.dart';
+import 'package:getnet_payments/enums/transaction/payment_type_enum.dart';
 import 'package:getnet_payments/getnet_deeplink_payments_method_channel.dart';
-import 'package:getnet_payments/models/transaction.dart';
+import 'package:getnet_payments/models/transaction/transaction.dart';
 
 /// The [GetnetDeeplinkPaymentsPlatform] abstract class defines the contract
 /// for platform-specific implementations of Getnet deeplink payments.

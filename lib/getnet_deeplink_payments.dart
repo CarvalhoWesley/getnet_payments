@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:getnet_payments/enums/payment_type_enum.dart';
+import 'package:getnet_payments/enums/transaction/payment_type_enum.dart';
 import 'package:getnet_payments/getnet_deeplink_payments_platform_interface.dart';
-import 'package:getnet_payments/models/transaction.dart';
+import 'package:getnet_payments/models/transaction/transaction.dart';
 
 /// The [GetnetDeeplinkPayments] class provides methods to perform
 /// payments and refunds using the Getnet platform via deeplinks.

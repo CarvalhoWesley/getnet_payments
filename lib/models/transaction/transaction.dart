@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:getnet_payments/models/automation_slip.dart';
+import 'package:getnet_payments/models/transaction/automation_slip.dart';
 
 /// The [Transaction] class represents the details of a transaction, including
 /// payment and refund data.
@@ -252,10 +252,8 @@ class Transaction {
           ? map['cardholderName'] as String
           : null,
       automationSlip: map['automationSlip'] != null
-          ? map['automationSlip'] is String
-              ? AutomationSlip.fromJson(map['automationSlip'] as String)
-              : AutomationSlip.fromMap(
-                  map['automationSlip'] as Map<String, dynamic>)
+          ? AutomationSlip.fromMap(
+              map['automationSlip'] as Map<String, dynamic>)
           : null,
       printMerchantPreference: map['printMerchantPreference'] != null
           ? map['printMerchantPreference'] as bool

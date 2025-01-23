@@ -14,10 +14,13 @@ buildscript {
     }
 }
 
-allprojects {
+rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs project(':getnet_payments').file('libs')
+        }  
     }
 }
 
@@ -72,4 +75,8 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    implementation (name: 'libposdigital-1.8.1-13-release', ext: 'aar')
 }
