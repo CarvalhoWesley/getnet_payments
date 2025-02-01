@@ -10,6 +10,7 @@ data class Transaction(
     val cvNumber: String?,
     val receiptAlreadyPrinted: Boolean?,
     val type: String?,
+    val brand: String?,
     val inputType: String?,
     val installments: String?,
     val gmtDateTime: String?,
@@ -26,5 +27,6 @@ data class Transaction(
     val pixPayloadResponse: String?,
     val refundTransactionDate: String?,
     val refundCvNumber: String?,
-    val refundOriginTerminal: String?
+    val refundOriginTerminal: String?,
+    val refund: Boolean?
 )

@@ -136,6 +136,34 @@ class DeeplinkUsecase(private val activity: Activity?) {
         }
     }
 
+    fun doCheckStatus(call: MethodCall, result: MethodChannel.Result) {
+        val callerId = call.argument<String>("callerId")
+        
+        if (callerId.isNullOrEmpty()) {
+            result.error("INVALID_ARGUMENTS", "Required arguments are missing", null)
+            return
+        }
+
+        // Construir a URI do deeplink
+        val uriBuilder = Uri.Builder()
+            .scheme("getnet")
+            .authority("pagamento")
+            .appendPath("v1")
+            .appendPath("checkstatus")
+            .appendQueryParameter("callerId", callerId)
+            
+
+        val deeplinkUri = uriBuilder.build()
+        val intent = Intent(Intent.ACTION_VIEW, deeplinkUri)
+        pendingResult = result
+
+        try {
+            activity?.startActivityForResult(intent, REQUEST_CODE_PAYMENT)
+        } catch (e: Exception) {
+            result.error("DEEPLINK_ERROR", "Failed to open deeplink: ${e.localizedMessage}", null)
+        }
+    }
+
     fun handleActivityResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             val gson = Gson()
@@ -157,6 +185,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
                 cvNumber = data.getStringExtra("cvNumber"),
                 receiptAlreadyPrinted = data.getBooleanExtra("receiptAlreadyPrinted", false),
                 type = data.getStringExtra("type"),
+                brand = data.getStringExtra("brand"),
                 inputType = data.getStringExtra("inputType"),
                 installments = data.getStringExtra("installments"),
                 gmtDateTime = data.getStringExtra("gmtDateTime"),
@@ -173,7 +202,8 @@ class DeeplinkUsecase(private val activity: Activity?) {
                 pixPayloadResponse = data.getStringExtra("pixPayloadResponse"),
                 refundTransactionDate = data.getStringExtra("refundTransactionDate"),
                 refundCvNumber = data.getStringExtra("refundCvNumber"),
-                refundOriginTerminal = data.getStringExtra("refundOriginTerminal")
+                refundOriginTerminal = data.getStringExtra("refundOriginTerminal"),
+                refund = data.getBooleanExtra("refund", false)
             )
 
             // Converter para JSON e retornar o resultado

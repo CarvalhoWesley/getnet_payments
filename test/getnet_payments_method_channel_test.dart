@@ -29,6 +29,9 @@ void main() {
       if (methodCall.method == 'reprintDeeplink') {
         return '{"result": "0"}'; // Mock de resposta
       }
+      if (methodCall.method == 'checkStatusDeeplink') {
+        return '{"result": "0", "callerId": "123"}'; // Mock de resposta
+      }
       return null;
     });
   });
@@ -39,7 +42,7 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  test('should invoke method channel with correct arguments', () async {
+  test('should invoke method channel with correct arguments payment', () async {
     final result = await methodChannelGetnetPayments.payment(
       amount: 100.0,
       paymentType: PaymentTypeEnum.credit,
@@ -65,7 +68,7 @@ void main() {
     });
   });
 
-  test('should handle null result gracefully', () async {
+  test('should handle null result gracefully payment', () async {
     // Alterando o mock para retornar null
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -82,7 +85,7 @@ void main() {
     expect(result, isNull);
   });
 
-  test('should throw exception when method channel fails', () async {
+  test('should throw exception when method channel fails payment', () async {
     // Alterando o mock para lançar uma exceção
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -100,7 +103,7 @@ void main() {
     );
   });
 
-  test('should invoke method channel with correct arguments', () async {
+  test('should invoke method channel with correct arguments refund', () async {
     final result = await methodChannelGetnetPayments.refund(
       amount: 100.0,
       transactionDate: DateTime.now(),
@@ -125,7 +128,7 @@ void main() {
     });
   });
 
-  test('should handle null result gracefully', () async {
+  test('should handle null result gracefully refund', () async {
     // Alterando o mock para retornar null
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -143,7 +146,7 @@ void main() {
     expect(result, isNull);
   });
 
-  test('should throw exception when method channel fails', () async {
+  test('should throw exception when method channel fails refund', () async {
     // Alterando o mock para lançar uma exceção
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -162,7 +165,7 @@ void main() {
     );
   });
 
-  test('should invoke method channel with correct arguments', () async {
+  test('should invoke method channel with correct arguments reprint', () async {
     final result = await methodChannelGetnetPayments.reprint();
 
     // Verificando o resultado
@@ -176,7 +179,7 @@ void main() {
     expect(log.first.arguments, null);
   });
 
-  test('should handle null result gracefully', () async {
+  test('should handle null result gracefully reprint', () async {
     // Alterando o mock para retornar null
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -187,5 +190,72 @@ void main() {
 
     // Verificando que o resultado é nulo
     expect(result, isNull);
+  });
+
+  test('should throw exception when method channel fails reprint', () async {
+    // Alterando o mock para lançar uma exceção
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+      throw PlatformException(code: 'ERROR', message: 'Something went wrong');
+    });
+
+    // Verificando que a exceção é lançada
+    expect(
+      () => methodChannelGetnetPayments.reprint(),
+      throwsA(isA<PlatformException>()),
+    );
+  });
+
+  //checkstatus test
+  test('should invoke method channel with correct arguments checkstatus',
+      () async {
+    final result = await methodChannelGetnetPayments.checkStatus(
+      callerId: '123',
+    );
+
+    // Verificando o resultado
+    expect(result, isNotNull);
+    expect(result, isA<Transaction>());
+    expect(result?.result, '0');
+    expect(result?.callerId, '123');
+
+    // Verificando as chamadas do MethodChannel
+    expect(log, hasLength(1));
+    expect(log.first.method, 'checkStatusDeeplink');
+    expect(log.first.arguments, {
+      'callerId': '123',
+    });
+  });
+
+  test('should handle null result gracefully checkstatus', () async {
+    // Alterando o mock para retornar null
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+      return null;
+    });
+
+    final result = await methodChannelGetnetPayments.checkStatus(
+      callerId: '123',
+    );
+
+    // Verificando que o resultado é nulo
+    expect(result, isNull);
+  });
+
+  test('should throw exception when method channel fails checkstatus',
+      () async {
+    // Alterando o mock para lançar uma exceção
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+      throw PlatformException(code: 'ERROR', message: 'Something went wrong');
+    });
+
+    // Verificando que a exceção é lançada
+    expect(
+      () => methodChannelGetnetPayments.checkStatus(
+        callerId: '123',
+      ),
+      throwsA(isA<PlatformException>()),
+    );
   });
 }
