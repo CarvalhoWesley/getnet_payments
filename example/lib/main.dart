@@ -83,9 +83,10 @@ class _PaymentAppState extends State<PaymentApp>
         align: AlignModeEnum.center,
         height: 200,
       ),
+      ItemPrintModel.linewrap(lines: 1),
       ItemPrintModel.barcode(
         content: "123456789012",
-        align: AlignModeEnum.right,
+        align: AlignModeEnum.center,
       ),
       ItemPrintModel.image(
         content: base64,

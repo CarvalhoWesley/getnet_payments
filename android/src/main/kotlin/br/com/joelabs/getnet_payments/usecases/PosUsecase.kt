@@ -1,10 +1,7 @@
 package br.com.joelabs.getnet_payments.usecases
 
-import android.content.Context
 import android.os.RemoteException
 import com.getnet.posdigital.PosDigital
-import com.getnet.posdigital.camera.ICameraCallback
-import com.getnet.posdigital.mifare.IMifareCallback
 import com.getnet.posdigital.printer.AlignMode
 import com.getnet.posdigital.printer.FontFormat
 import com.getnet.posdigital.printer.IPrinterCallback
@@ -12,17 +9,17 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.regex.Pattern
 import org.json.JSONException
 import android.graphics.Bitmap
+import android.app.Activity
 
-class PosUsecase(private val context: Context) {
+class PosUsecase(private val activity: Activity?) {
 
     private val logger = Logger.getLogger(PosUsecase::class.java.name)
 
     fun connectPosDigitalService() {
         try {
-            PosDigital.register(context, object : PosDigital.BindCallback {
+            PosDigital.register(activity, object : PosDigital.BindCallback {
                 override fun onError(e: Exception) {
                     logger.log(Level.SEVERE, "Failed to connect to PosDigital: ${e.message}")
                     reconnect()
@@ -44,7 +41,7 @@ class PosUsecase(private val context: Context) {
     fun disconnectPosDigitalService() {
         try {
             if (PosDigital.getInstance().isInitiated) {
-                PosDigital.unregister(context)
+                PosDigital.unregister(activity)
                 logger.info("PosDigital service unregistered.")
             }
         } catch (e: Exception) {
@@ -72,6 +69,8 @@ class PosUsecase(private val context: Context) {
 
         try {
             // Inicializa a impressora
+            if (!PosDigital.getInstance().isInitiated)
+                connectPosDigitalService()
             PosDigital.getInstance().getPrinter().init()
             PosDigital.getInstance().getPrinter().setGray(10)
 

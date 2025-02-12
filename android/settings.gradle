@@ -1,1 +1,4 @@
 rootProject.name = 'getnet_payments'
+
+include ':getnet_payments'
+project(':getnet_payments').projectDir = new File(rootProject.projectDir, '../getnet_payments')
