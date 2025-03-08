@@ -155,4 +155,37 @@ class MethodChannelGetnetDeeplinkPayments
       rethrow;
     }
   }
+
+  /// Checks the status of a transaction via the native platform.
+  /// Returns a [Transaction] containing the transaction status, or `null` if the operation fails.
+  /// Throws an exception if an error occurs during platform communication.
+  /// The [callerId] parameter is the transaction identifier.
+  @override
+  Future<Transaction?> checkStatus({required String callerId}) async {
+    try {
+      if (_transactionInProgress) {
+        return null;
+      }
+
+      _transactionInProgress = true;
+
+      final result = await methodChannel.invokeMethod<String>(
+        'checkStatusDeeplink',
+        <String, dynamic>{
+          'callerId': callerId,
+        },
+      );
+
+      if (result == null) {
+        return null;
+      }
+
+      _transactionInProgress = false;
+
+      return Transaction.fromJson(result);
+    } catch (e) {
+      _transactionInProgress = false;
+      rethrow;
+    }
+  }
 }

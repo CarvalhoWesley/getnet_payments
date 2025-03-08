@@ -103,4 +103,26 @@ class GetnetDeeplinkPayments {
       rethrow;
     }
   }
+
+  /// Checks the status of a transaction via the native platform.
+  ///
+  /// [callerId] is the transaction identifier and cannot be empty.
+  /// For debit payments, this value must always be 1.
+  ///
+  /// Returns a [Transaction] object containing transaction details, or
+  /// `null` if the transaction fails.
+  ///
+  /// Throws an exception if:
+  /// - [callerId] is empty.
+  /// - The number of installments is not 1 for debit payment types.
+  Future<Transaction?> checkStatus({required String callerId}) {
+    assert(callerId.isNotEmpty, 'The client identifier cannot be empty');
+
+    try {
+      return GetnetDeeplinkPaymentsPlatform.instance
+          .checkStatus(callerId: callerId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

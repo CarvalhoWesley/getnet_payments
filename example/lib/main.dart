@@ -33,7 +33,7 @@ class _PaymentAppState extends State<PaymentApp>
   late TabController _tabController;
   TextEditingController valueController = TextEditingController(text: '12.50');
   String? mensagem;
-  String? mensagemReembolso;
+  String? mensagemTransacoes;
   final List<Transaction> _successfulTransactions = [];
 
   @override
@@ -43,16 +43,16 @@ class _PaymentAppState extends State<PaymentApp>
   }
 
   void _addTransaction(Transaction transaction) {
-    if (transaction.result != '0') return;
+    if (transaction.result != '0' && transaction.result != '5') return;
     setState(() {
       _successfulTransactions.insert(0, transaction);
     });
   }
 
   double _convertAmount(Transaction transaction) {
-    final amount = transaction.amount;
+    final amount = transaction.amount ?? '0000';
     final amountDouble = double.parse(
-        '${amount!.substring(0, amount.length - 2)}.${amount.substring(amount.length - 2)}');
+        '${amount.substring(0, amount.length - 2)}.${amount.substring(amount.length - 2)}');
     return amountDouble;
   }
 
@@ -107,10 +107,11 @@ class _PaymentAppState extends State<PaymentApp>
 
     final valor = double.parse(valueController.text);
     try {
+      final callerId = const Uuid().v4();
       final transaction = await GetnetPayments.deeplink.payment(
         amount: valor,
         paymentType: type,
-        callerId: const Uuid().v4(),
+        callerId: callerId,
         installments: installments,
         creditType: creditType,
       );
@@ -118,7 +119,8 @@ class _PaymentAppState extends State<PaymentApp>
         setState(() {
           mensagem = '${transaction.result} - ${transaction.resultDetails}';
         });
-        _addTransaction(transaction);
+        _addTransaction(
+            transaction.copyWith(callerId: transaction.callerId ?? callerId));
       }
     } catch (e) {
       log(e.toString());
@@ -237,13 +239,13 @@ class _PaymentAppState extends State<PaymentApp>
           SizedBox(
             child: Column(
               children: [
-                if (mensagemReembolso != null)
+                if (mensagemTransacoes != null)
                   Column(
                     children: [
                       const Text('Resultado Reembolso:'),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(mensagemReembolso!),
+                        child: Text(mensagemTransacoes!),
                       ),
                     ],
                   ),
@@ -256,31 +258,63 @@ class _PaymentAppState extends State<PaymentApp>
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListTile(
-                          title: Text('CV: ${transaction.cvNumber}'),
-                          subtitle: Text(
-                              'Valor: ${_convertAmount(transaction).toStringAsFixed(2)}'),
-                          trailing: ElevatedButton(
-                            onPressed: () async {
-                              final refund =
-                                  await GetnetPayments.deeplink.refund(
-                                amount: _convertAmount(transaction),
-                                transactionDate: DateTime.now(),
-                                cvNumber: transaction.cvNumber,
-                              );
+                          title: Text(
+                              'CV: ${transaction.cvNumber ?? 'Sem informação'}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Valor: ${_convertAmount(transaction).toStringAsFixed(2)}'),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  FilledButton(
+                                    onPressed: () async {
+                                      final refund = await GetnetPayments
+                                          .deeplink
+                                          .checkStatus(
+                                        callerId: transaction.callerId!,
+                                      );
 
-                              if (refund != null) {
-                                setState(() {
-                                  mensagemReembolso =
-                                      '${refund.result} - ${refund.resultDetails}';
-                                });
+                                      if (refund != null) {
+                                        setState(() {
+                                          mensagemTransacoes =
+                                              '${refund.result} - ${refund.resultDetails}';
+                                        });
+                                      }
+                                    },
+                                    child: const Text('Status'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () async {
+                                      final refund =
+                                          await GetnetPayments.deeplink.refund(
+                                        amount: _convertAmount(transaction),
+                                        transactionDate: DateTime.now(),
+                                        cvNumber: transaction.cvNumber,
+                                      );
 
-                                if (refund.result ==
-                                    TransactionResultEnum.success.value) {
-                                  _successfulTransactions.removeAt(index);
-                                }
-                              }
-                            },
-                            child: const Text('Reembolsar'),
+                                      if (refund != null) {
+                                        setState(() {
+                                          mensagemTransacoes =
+                                              '${refund.result} - ${refund.resultDetails}';
+                                        });
+
+                                        if (refund.result ==
+                                            TransactionResultEnum
+                                                .success.value) {
+                                          _successfulTransactions
+                                              .removeAt(index);
+                                        }
+                                      }
+                                    },
+                                    child: const Text('Reembolsar'),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );

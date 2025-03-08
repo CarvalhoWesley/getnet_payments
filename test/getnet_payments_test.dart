@@ -42,6 +42,16 @@ class MockGetnetDeeplinkPaymentsPlatform extends Mock
     return super
         .noSuchMethod(Invocation.method(#reprint, []), returnValue: '0');
   }
+
+  @override
+  Future<Transaction?> checkStatus({required String callerId}) async {
+    return super.noSuchMethod(
+        Invocation.method(
+          #checkStatus,
+          [callerId],
+        ),
+        returnValue: Transaction(result: '0', callerId: '123'));
+  }
 }
 
 void main() {
@@ -166,6 +176,24 @@ void main() {
       expect(result, isNotNull);
       expect(result, '0');
       verify(mockPlatform.reprint()).called(1);
+    });
+
+    test('should call platform implementation with correct arguments',
+        () async {
+      final mockTransaction = Transaction(
+        result: '0',
+        callerId: '123',
+      );
+
+      when(mockPlatform.checkStatus(callerId: '123'))
+          .thenAnswer((_) async => mockTransaction);
+
+      final result = await getnetPayments.checkStatus(callerId: '123');
+
+      expect(result, isNotNull);
+      expect(result?.result, '0');
+      expect(result?.callerId, '123');
+      verify(mockPlatform.checkStatus(callerId: '123')).called(1);
     });
   });
 }

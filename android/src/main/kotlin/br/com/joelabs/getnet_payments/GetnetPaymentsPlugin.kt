@@ -70,6 +70,7 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
           "paymentDeeplink" -> deeplinkUsecase?.doPayment(call, result)
           "refundDeeplink" -> deeplinkUsecase?.doRefund(call, result)
           "reprintDeeplink" -> deeplinkUsecase?.doReprint(call, result)
+          "checkStatusDeeplink" -> deeplinkUsecase?.doCheckStatus(call, result)
 
           // Métodos relacionados ao PosUsecase
           "print" -> posUsecase?.print(call, result)
