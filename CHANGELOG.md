@@ -1,3 +1,18 @@
+## [1.0.0] - 2025-03-09
+
+### Added
+
+- Method to check status of the transaction.
+
+#### Example :
+```dart
+GetnetPayments.deeplink.checkStatus(callerId: '1234567890');
+```
+
+### Fixed
+
+- POS Digital Service Register.
+
 ## [0.0.4] - 2025-01-23
 
 ### Added
