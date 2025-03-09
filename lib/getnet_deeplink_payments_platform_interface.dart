@@ -73,4 +73,10 @@ abstract class GetnetDeeplinkPaymentsPlatform {
   /// Reprints a last transaction receipt.
   /// Returns a [String] containing the reprint result, or `null` if the operation fails.
   Future<String?> reprint();
+
+  /// Checks the status of a transaction via the native platform.
+  /// Returns a [Transaction] containing the transaction status, or `null` if the operation fails.
+  /// Throws an exception if an error occurs during platform communication.
+  /// The [callerId] parameter is the transaction identifier.
+  Future<Transaction?> checkStatus({required String callerId});
 }

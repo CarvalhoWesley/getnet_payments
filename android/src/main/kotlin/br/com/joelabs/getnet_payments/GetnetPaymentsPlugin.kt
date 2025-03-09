@@ -33,7 +33,7 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
 
       // Inicializar os casos de uso com o contexto ou atividade
       deeplinkUsecase = DeeplinkUsecase(activity)
-      posUsecase = PosUsecase(activity!!)
+      posUsecase = PosUsecase(activity)
 
       // Conecta ao serviço PosDigital
       posUsecase?.connectPosDigitalService()
@@ -70,6 +70,7 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
           "paymentDeeplink" -> deeplinkUsecase?.doPayment(call, result)
           "refundDeeplink" -> deeplinkUsecase?.doRefund(call, result)
           "reprintDeeplink" -> deeplinkUsecase?.doReprint(call, result)
+          "checkStatusDeeplink" -> deeplinkUsecase?.doCheckStatus(call, result)
 
           // Métodos relacionados ao PosUsecase
           "print" -> posUsecase?.print(call, result)

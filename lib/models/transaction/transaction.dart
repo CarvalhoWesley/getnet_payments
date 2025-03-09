@@ -36,13 +36,16 @@ class Transaction {
   /// The type of the transaction (e.g., credit, debit).
   final String? type;
 
+  /// The brand of the card used in the transaction.
+  final String? brand;
+
   /// The input type for the transaction (e.g., manual entry, card swipe).
   final String? inputType;
 
   /// The number of installments for the transaction.
   final String? installments;
 
-  /// The GMT timestamp of the transaction.
+  /// The GMT timestamp of the transaction. Date Format (MMDDhhmmss).
   final String? gmtDateTime;
 
   /// The local NSU of the transaction.
@@ -98,6 +101,7 @@ class Transaction {
     this.cvNumber,
     this.receiptAlreadyPrinted,
     this.type,
+    this.brand,
     this.inputType,
     this.installments,
     this.gmtDateTime,
@@ -128,6 +132,7 @@ class Transaction {
     String? cvNumber,
     bool? receiptAlreadyPrinted,
     String? type,
+    String? brand,
     String? inputType,
     String? installments,
     String? gmtDateTime,
@@ -158,6 +163,7 @@ class Transaction {
       receiptAlreadyPrinted:
           receiptAlreadyPrinted ?? this.receiptAlreadyPrinted,
       type: type ?? this.type,
+      brand: brand ?? this.brand,
       inputType: inputType ?? this.inputType,
       installments: installments ?? this.installments,
       gmtDateTime: gmtDateTime ?? this.gmtDateTime,
@@ -192,6 +198,7 @@ class Transaction {
       'cvNumber': cvNumber,
       'receiptAlreadyPrinted': receiptAlreadyPrinted,
       'type': type,
+      'brand': brand,
       'inputType': inputType,
       'installments': installments,
       'gmtDateTime': gmtDateTime,
@@ -229,6 +236,7 @@ class Transaction {
           ? map['receiptAlreadyPrinted'] as bool
           : null,
       type: map['type'] != null ? map['type'] as String : null,
+      brand: map['brand'] != null ? map['brand'] as String : null,
       inputType: map['inputType'] != null ? map['inputType'] as String : null,
       installments:
           map['installments'] != null ? map['installments'] as String : null,
@@ -284,7 +292,7 @@ class Transaction {
   /// Returns a string representation of the instance.
   @override
   String toString() {
-    return 'Transaction(result: $result, resultDetails: $resultDetails, amount: $amount, callerId: $callerId, nsu: $nsu, nsuLastSuccesfullMessage: $nsuLastSuccesfullMessage, cvNumber: $cvNumber, receiptAlreadyPrinted: $receiptAlreadyPrinted, type: $type, inputType: $inputType, installments: $installments, gmtDateTime: $gmtDateTime, nsuLocal: $nsuLocal, authorizationCode: $authorizationCode, cardBin: $cardBin, cardLastDigits: $cardLastDigits, extraScreensResult: $extraScreensResult, splitPayloadResponse: $splitPayloadResponse, cardholderName: $cardholderName, automationSlip: $automationSlip, printMerchantPreference: $printMerchantPreference, orderId: $orderId, pixPayloadResponse: $pixPayloadResponse, refundTransactionDate: $refundTransactionDate, refundCvNumber: $refundCvNumber, refundOriginTerminal: $refundOriginTerminal)';
+    return 'Transaction(result: $result, resultDetails: $resultDetails, amount: $amount, callerId: $callerId, nsu: $nsu, nsuLastSuccesfullMessage: $nsuLastSuccesfullMessage, cvNumber: $cvNumber, receiptAlreadyPrinted: $receiptAlreadyPrinted, type: $type, brand: $brand, inputType: $inputType, installments: $installments, gmtDateTime: $gmtDateTime, nsuLocal: $nsuLocal, authorizationCode: $authorizationCode, cardBin: $cardBin, cardLastDigits: $cardLastDigits, extraScreensResult: $extraScreensResult, splitPayloadResponse: $splitPayloadResponse, cardholderName: $cardholderName, automationSlip: $automationSlip, printMerchantPreference: $printMerchantPreference, orderId: $orderId, pixPayloadResponse: $pixPayloadResponse, refundTransactionDate: $refundTransactionDate, refundCvNumber: $refundCvNumber, refundOriginTerminal: $refundOriginTerminal)';
   }
 
   /// Compares the current instance with another [Transaction] instance.
@@ -301,6 +309,7 @@ class Transaction {
         other.cvNumber == cvNumber &&
         other.receiptAlreadyPrinted == receiptAlreadyPrinted &&
         other.type == type &&
+        other.brand == brand &&
         other.inputType == inputType &&
         other.installments == installments &&
         other.gmtDateTime == gmtDateTime &&
@@ -332,6 +341,7 @@ class Transaction {
         cvNumber.hashCode ^
         receiptAlreadyPrinted.hashCode ^
         type.hashCode ^
+        brand.hashCode ^
         inputType.hashCode ^
         installments.hashCode ^
         gmtDateTime.hashCode ^
