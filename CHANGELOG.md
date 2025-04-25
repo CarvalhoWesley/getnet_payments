@@ -1,3 +1,9 @@
+## [1.1.0] - 2025-04-25
+
+### Added
+
+- `allowPrintCurrentTransaction` parameter in payment and refund method.
+
 ## [1.0.0] - 2025-03-09
 
 ### Added

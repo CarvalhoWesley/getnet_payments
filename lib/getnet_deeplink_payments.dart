@@ -67,7 +67,7 @@ class GetnetDeeplinkPayments {
   /// [cvNumber] (optional) is the control number of the transaction (CV).
   /// [originTerminal] (optional) identifies the origin terminal.
   /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
-  /// 
+  ///
   /// Returns a [Transaction] object containing refund details, or
   /// `null` if the operation fails.
   ///
