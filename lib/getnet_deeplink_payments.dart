@@ -17,6 +17,7 @@ class GetnetDeeplinkPayments {
   /// [callerId] is the transaction identifier and cannot be empty.
   /// [installments] specifies the number of installments (between 1 and 12).
   /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
   /// For debit payments, this value must always be 1.
   ///
   /// Returns a [Transaction] object containing transaction details, or
@@ -33,6 +34,7 @@ class GetnetDeeplinkPayments {
     required String callerId,
     int installments = 1,
     String? creditType,
+    bool? allowPrintCurrentTransaction,
   }) async {
     assert(amount > 0, 'The payment amount must be greater than zero');
     assert(installments > 0 && installments <= 12,
@@ -50,6 +52,7 @@ class GetnetDeeplinkPayments {
         callerId: callerId,
         installments: installments,
         creditType: creditType,
+        allowPrintCurrentTransaction: allowPrintCurrentTransaction,
       );
     } catch (e) {
       // Emit the error through the stream
@@ -63,7 +66,8 @@ class GetnetDeeplinkPayments {
   /// [transactionDate] (optional) specifies the date of the original transaction.
   /// [cvNumber] (optional) is the control number of the transaction (CV).
   /// [originTerminal] (optional) identifies the origin terminal.
-  ///
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
+  /// 
   /// Returns a [Transaction] object containing refund details, or
   /// `null` if the operation fails.
   ///
@@ -74,6 +78,7 @@ class GetnetDeeplinkPayments {
     DateTime? transactionDate,
     String? cvNumber,
     String? originTerminal,
+    bool? allowPrintCurrentTransaction,
   }) async {
     assert(amount > 0, 'The refund amount must be greater than zero');
 
@@ -84,6 +89,7 @@ class GetnetDeeplinkPayments {
         transactionDate: transactionDate,
         cvNumber: cvNumber,
         originTerminal: originTerminal,
+        allowPrintCurrentTransaction: allowPrintCurrentTransaction,
       );
     } catch (e) {
       // Emit the error through the stream

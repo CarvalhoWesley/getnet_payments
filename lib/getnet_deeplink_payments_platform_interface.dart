@@ -40,6 +40,7 @@ abstract class GetnetDeeplinkPaymentsPlatform {
   /// [callerId] is the transaction identifier and cannot be empty.
   /// [installments] specifies the number of installments.
   /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
   /// Returns a [Transaction] object containing transaction details, or
   /// `null` if the transaction fails.
   ///
@@ -50,6 +51,7 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     required String callerId,
     int installments,
     String? creditType,
+    bool? allowPrintCurrentTransaction,
   });
 
   /// Processes a refund for a transaction with the provided parameters.
@@ -58,6 +60,7 @@ abstract class GetnetDeeplinkPaymentsPlatform {
   /// [transactionDate] (optional) specifies the date of the original transaction.
   /// [cvNumber] (optional) is the control number of the transaction (CV).
   /// [originTerminal] (optional) identifies the origin terminal.
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
   ///
   /// Returns a [Transaction] object containing refund details, or
   /// `null` if the operation fails.
@@ -68,6 +71,7 @@ abstract class GetnetDeeplinkPaymentsPlatform {
     DateTime? transactionDate,
     String? cvNumber,
     String? originTerminal,
+    bool? allowPrintCurrentTransaction,
   });
 
   /// Reprints a last transaction receipt.

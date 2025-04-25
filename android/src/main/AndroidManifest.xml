@@ -1,13 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="br.com.joelabs.getnet_payments">
-
     <uses-permission android:name="com.getnet.posdigital.service.POSDIGITAL" />
-
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="getnet" />
         </intent>
     </queries>
-    
 </manifest>

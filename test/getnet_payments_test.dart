@@ -14,10 +14,17 @@ class MockGetnetDeeplinkPaymentsPlatform extends Mock
     required String callerId,
     int installments = 1,
     String? creditType,
+    bool? allowPrintCurrentTransaction,
   }) async {
     return super.noSuchMethod(
-      Invocation.method(
-          #payment, [amount, paymentType, callerId, installments, creditType]),
+      Invocation.method(#payment, [
+        amount,
+        paymentType,
+        callerId,
+        installments,
+        creditType,
+        allowPrintCurrentTransaction,
+      ]),
       returnValue: Transaction(result: '0', callerId: '123'),
     );
   }
@@ -28,11 +35,18 @@ class MockGetnetDeeplinkPaymentsPlatform extends Mock
     DateTime? transactionDate,
     String? cvNumber,
     String? originTerminal,
+    bool? allowPrintCurrentTransaction,
   }) async {
     return super.noSuchMethod(
         Invocation.method(
           #refund,
-          [amount, transactionDate, cvNumber, originTerminal],
+          [
+            amount,
+            transactionDate,
+            cvNumber,
+            originTerminal,
+            allowPrintCurrentTransaction,
+          ],
         ),
         returnValue: Transaction(result: '0', callerId: '123'));
   }
