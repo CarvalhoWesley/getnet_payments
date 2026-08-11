@@ -60,7 +60,9 @@ class _PaymentAppState extends State<PaymentApp>
     FocusScope.of(context).unfocus();
 
     final logo = await rootBundle.load('assets/images/logo.jpg');
-    String base64 = base64Encode(logo.buffer.asUint8List());
+    String base64 = base64Encode(
+      logo.buffer.asUint8List(logo.offsetInBytes, logo.lengthInBytes),
+    );
 
     final items = [
       ItemPrintModel.text(

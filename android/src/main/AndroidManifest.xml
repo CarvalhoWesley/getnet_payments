@@ -8,6 +8,10 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="getnet" />
         </intent>
+        <package android:name="com.getnet.posdigital.service" />
+        <package android:name="br.com.getnet.posdigital" />
+        <package android:name="com.pagonxt.hal.platform" />
+        <package android:name="com.usdk.apiservice" />
     </queries>
     
 </manifest>

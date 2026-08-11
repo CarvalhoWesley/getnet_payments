@@ -78,5 +78,5 @@ android {
 }
 
 dependencies {
-    implementation (name: 'libposdigital-1.8.1-13-release', ext: 'aar')
+    implementation (name: 'libposdigital-2.1.0-release', ext: 'aar')
 }

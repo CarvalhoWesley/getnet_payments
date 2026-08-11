@@ -1,5 +1,7 @@
 package br.com.joelabs.getnet_payments.usecases
 
+import android.app.Activity
+import android.graphics.Bitmap
 import android.os.RemoteException
 import com.getnet.posdigital.PosDigital
 import com.getnet.posdigital.printer.AlignMode
@@ -10,8 +12,6 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.json.JSONException
-import android.graphics.Bitmap
-import android.app.Activity
 
 class PosUsecase(private val activity: Activity?) {
 
@@ -19,9 +19,16 @@ class PosUsecase(private val activity: Activity?) {
 
     fun connectPosDigitalService() {
         try {
-            PosDigital.register(activity, object : PosDigital.BindCallback {
+            val context = activity
+                ?: throw IllegalStateException("Activity is not available.")
+
+            PosDigital.register(context, object : PosDigital.BindCallback {
+
                 override fun onError(e: Exception) {
-                    logger.log(Level.SEVERE, "Failed to connect to PosDigital: ${e.message}")
+                    logger.log(
+                        Level.SEVERE,
+                        "Failed to connect to PosDigital: ${e.message}"
+                    )
                     reconnect()
                 }
 
@@ -33,19 +40,30 @@ class PosUsecase(private val activity: Activity?) {
                     logger.info("PosDigital disconnected.")
                 }
             })
+
         } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Exception while registering PosDigital: ${e.message}")
+            logger.log(
+                Level.SEVERE,
+                "Exception while registering PosDigital: ${e.message}"
+            )
         }
     }
 
     fun disconnectPosDigitalService() {
         try {
-            if (PosDigital.getInstance().isInitiated) {
-                PosDigital.unregister(activity)
+            val context = activity
+                ?: throw IllegalStateException("Activity is not available.")
+
+            if (PosDigital.getInstance().isInitiated()) {
+                PosDigital.unregister(context)
                 logger.info("PosDigital service unregistered.")
             }
+
         } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Error while unregistering PosDigital: ${e.message}")
+            logger.log(
+                Level.SEVERE,
+                "Error while unregistering PosDigital: ${e.message}"
+            )
         }
     }
 
@@ -53,87 +71,194 @@ class PosUsecase(private val activity: Activity?) {
         try {
             disconnectPosDigitalService()
             connectPosDigitalService()
+
         } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Error while reconnecting to PosDigital: ${e.message}")
+            logger.log(
+                Level.SEVERE,
+                "Error while reconnecting to PosDigital: ${e.message}"
+            )
         }
     }
 
-    fun print(call: MethodCall, result: MethodChannel.Result) {
+    fun print(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
         val instructions = call.arguments as? List<Map<String, Any>>
-                ?: throw JSONException("Invalid or missing instruction list.")
+            ?: throw JSONException("Invalid or missing instruction list.")
 
-        if (instructions.isNullOrEmpty()) {
-            result.error("INVALID_ARGUMENTS", "Instructions list cannot be null or empty.", null)
+        if (instructions.isEmpty()) {
+            result.error(
+                "INVALID_ARGUMENTS",
+                "Instructions list cannot be null or empty.",
+                null
+            )
             return
         }
 
         try {
-            // Inicializa a impressora
-            if (!PosDigital.getInstance().isInitiated)
-                connectPosDigitalService()
-            PosDigital.getInstance().getPrinter().init()
-            PosDigital.getInstance().getPrinter().setGray(10)
 
-            // Processa cada instrução
+            if (!PosDigital.getInstance().isInitiated()) {
+                connectPosDigitalService()
+                result.error(
+                    "PRINTER_NOT_READY",
+                    "Printer service is not connected yet. Please try again in a moment.",
+                    null
+                )
+                return
+            }
+
+            PosDigital.getInstance()
+                .getPrinter()
+                .init()
+
+            PosDigital.getInstance()
+                .getPrinter()
+                .setGray(5)
+
             for (instruction in instructions) {
                 processInstruction(instruction)
             }
 
-            // Chama o método de impressão
-            PosDigital.getInstance().getPrinter().print(object : IPrinterCallback.Stub() {
-                override fun onSuccess() {
-                    result.success("Printed successfully.")
-                }
+            PosDigital.getInstance()
+                .getPrinter()
+                .print(object : IPrinterCallback.Stub() {
 
-                override fun onError(cause: Int) {
-                    val errorMessage = mapPrinterError(cause)
-                    result.error("PRINT_ERROR", errorMessage, null)
-                }
-            })
+                    override fun onSuccess() {
+                        result.success("Printed successfully.")
+                    }
+
+                    override fun onError(cause: Int) {
+                        val errorMessage = mapPrinterError(cause)
+
+                        result.error(
+                            "PRINT_ERROR",
+                            errorMessage,
+                            null
+                        )
+                    }
+                })
 
         } catch (e: RemoteException) {
-            result.error("PRINT_ERROR", "Failed to print: ${e.message}", null)
+            result.error(
+                "PRINT_ERROR",
+                "Failed to print: ${e.message}",
+                null
+            )
+
         } catch (e: JSONException) {
-            result.error("JSON_ERROR", "Invalid instruction format: ${e.message}", null)
+            result.error(
+                "JSON_ERROR",
+                "Invalid instruction format: ${e.message}",
+                null
+            )
+
         } catch (e: Exception) {
-            result.error("UNKNOWN_ERROR", "Unexpected error: ${e.message}", null)
+            result.error(
+                "UNKNOWN_ERROR",
+                "Unexpected error: ${e.message}",
+                null
+            )
         }
     }
 
-    private fun processInstruction(instruction: Map<String, Any>) {
-        val type = instruction["type"] as? String ?: throw JSONException("Instruction must have a 'type' field.")
-        val align = mapAlignMode(instruction["align"] as? String ?: "LEFT")
-    
-        // Configura o formato da fonte (int), se especificado
-        val fontFormat = mapFontFormat(instruction["fontFormat"] as? String ?: "MEDIUM")
-        PosDigital.getInstance().getPrinter().defineFontFormat(fontFormat)
-    
+    private fun processInstruction(
+        instruction: Map<String, Any>
+    ) {
+        val type = instruction["type"] as? String
+            ?: throw JSONException(
+                "Instruction must have a 'type' field."
+            )
+
+        val align = mapAlignMode(
+            instruction["align"] as? String ?: "LEFT"
+        )
+
+        val fontFormat = mapFontFormat(
+            instruction["fontFormat"] as? String ?: "MEDIUM"
+        )
+
+        PosDigital.getInstance()
+            .getPrinter()
+            .defineFontFormat(fontFormat)
+
         when (type) {
+
             "text" -> {
-                val text = instruction["content"] as? String ?: throw JSONException("Text instruction must have 'content'.")
-                PosDigital.getInstance().getPrinter().addText(align, text)
+                val text = instruction["content"] as? String
+                    ?: throw JSONException(
+                        "Text instruction must have 'content'."
+                    )
+
+                PosDigital.getInstance()
+                    .getPrinter()
+                    .addText(align, text)
             }
+
             "qrcode" -> {
-                val content = instruction["content"] as? String ?: throw JSONException("QR code instruction must have 'content'.")
-                val height = (instruction["height"] as? Int) ?: 300
-                PosDigital.getInstance().getPrinter().addQrCode(align, height, content)
+                val content = instruction["content"] as? String
+                    ?: throw JSONException(
+                        "QR code instruction must have 'content'."
+                    )
+
+                val height = instruction["height"] as? Int ?: 300
+
+                PosDigital.getInstance()
+                    .getPrinter()
+                    .addQrCode(
+                        align,
+                        height,
+                        content
+                    )
             }
+
             "barcode" -> {
-                val content = instruction["content"] as? String ?: throw JSONException("Barcode instruction must have 'content'.")
-                PosDigital.getInstance().getPrinter().addBarCode(align, content)
+                val content = instruction["content"] as? String
+                    ?: throw JSONException(
+                        "Barcode instruction must have 'content'."
+                    )
+
+                PosDigital.getInstance()
+                    .getPrinter()
+                    .addBarCode(
+                        align,
+                        content
+                    )
             }
+
             "image" -> {
-                val base64Image = instruction["content"] as? String ?: throw JSONException("Image instruction must have 'content'.")
+                val base64Image = instruction["content"] as? String
+                    ?: throw JSONException(
+                        "Image instruction must have 'content'."
+                    )
+
                 val bitmap = decodeBase64ToBitmap(base64Image)
-                PosDigital.getInstance().getPrinter().addImageBitmap(align, bitmap)
+
+                PosDigital.getInstance()
+                    .getPrinter()
+                    .addImageBitmap(
+                        align,
+                        bitmap
+                    )
             }
+
             "linewrap" -> {
-                var lines = (instruction["lines"] as? Int) ?: 1
-                while (lines-- > 0)
-                    PosDigital.getInstance().getPrinter().addText(align, "\n")
+                var lines = instruction["lines"] as? Int ?: 1
+
+                while (lines-- > 0) {
+                    PosDigital.getInstance()
+                        .getPrinter()
+                        .addText(
+                            align,
+                            "\n"
+                        )
+                }
             }
+
             else -> {
-                throw JSONException("Unsupported instruction type: $type")
+                throw JSONException(
+                    "Unsupported instruction type: $type"
+                )
             }
         }
     }
@@ -167,14 +292,26 @@ class PosUsecase(private val activity: Activity?) {
 
     private fun mapFontFormat(fontFormat: String): Int {
         return when (fontFormat.uppercase()) {
-            "SMALL" -> FontFormat.SMALL // 48 caracteres por linha
-            "LARGE" -> FontFormat.LARGE // 32 caracteres por linha
-            else -> FontFormat.MEDIUM   // 32 caracteres por linha (padrão)
+            "SMALL" -> FontFormat.SMALL
+            "LARGE" -> FontFormat.LARGE
+            else -> FontFormat.MEDIUM
         }
     }
 
-    private fun decodeBase64ToBitmap(base64Image: String): Bitmap {
-        val decodedBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT)
-        return android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    private fun decodeBase64ToBitmap(
+        base64Image: String
+    ): Bitmap {
+        val decodedBytes = android.util.Base64.decode(
+            base64Image,
+            android.util.Base64.DEFAULT
+        )
+
+        return android.graphics.BitmapFactory.decodeByteArray(
+            decodedBytes,
+            0,
+            decodedBytes.size
+        ) ?: throw JSONException(
+            "Image instruction 'content' is not a valid base64-encoded image."
+        )
     }
 }
