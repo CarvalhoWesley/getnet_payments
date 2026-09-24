@@ -180,7 +180,11 @@ class DeeplinkUsecase(private val activity: Activity?) {
             // Converter automationSlip para objeto
             val automationSlipJson = data.getStringExtra("automationSlip")
             val automationSlip = automationSlipJson?.let {
-                gson.fromJson(it, AutomationSlip::class.java)
+                try {
+                    gson.fromJson(it, AutomationSlip::class.java)
+                } catch (e: Exception) {
+                    null
+                }
             }
 
             // Criar o objeto Transaction
