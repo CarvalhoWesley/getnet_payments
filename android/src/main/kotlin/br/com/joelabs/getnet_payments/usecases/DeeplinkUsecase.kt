@@ -23,6 +23,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
         val installments = call.argument<Int>("installments")
         val amount = call.argument<Double>("amount")
         val callerId = call.argument<String>("callerId")
+        val allowPrintCurrentTransaction = call.argument<Boolean>("allowPrintCurrentTransaction")
 
         if (amount == null || amount <= 0) {
             result.error("INVALID_ARGUMENTS", "Invalid amount provided", null)
@@ -55,6 +56,10 @@ class DeeplinkUsecase(private val activity: Activity?) {
             }
         }
 
+        if (allowPrintCurrentTransaction != null) {
+            uriBuilder.appendQueryParameter("allowPrintCurrentTransaction", allowPrintCurrentTransaction.toString())
+        }
+
         val deeplinkUri = uriBuilder.build()
         val intent = Intent(Intent.ACTION_VIEW, deeplinkUri)
         pendingResult = result
@@ -71,6 +76,7 @@ class DeeplinkUsecase(private val activity: Activity?) {
         val transactionDate = call.argument<String>("transactionDate")
         val cvNumber = call.argument<String>("cvNumber")
         val originTerminal = call.argument<String>("originTerminal")
+        val allowPrintCurrentTransaction = call.argument<Boolean>("allowPrintCurrentTransaction")
 
         if (amount == null || amount <= 0) {
             result.error("INVALID_ARGUMENTS", "Invalid amount provided", null)
@@ -92,7 +98,6 @@ class DeeplinkUsecase(private val activity: Activity?) {
             .appendPath("v1")
             .appendPath("refund")
             .appendQueryParameter("amount", amountFormatted)
-            .appendQueryParameter("allowPrintCurrentTransaction", "false")
             
         if (!transactionDate.isNullOrEmpty()) {
             uriBuilder.appendQueryParameter("transactionDate", transactionDate)
@@ -104,6 +109,10 @@ class DeeplinkUsecase(private val activity: Activity?) {
 
         if (!originTerminal.isNullOrEmpty()) {
             uriBuilder.appendQueryParameter("originTerminal", originTerminal)
+        }
+
+        if (allowPrintCurrentTransaction != null) {
+            uriBuilder.appendQueryParameter("allowPrintCurrentTransaction", allowPrintCurrentTransaction.toString())
         }
 
         val deeplinkUri = uriBuilder.build()

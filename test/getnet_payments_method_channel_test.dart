@@ -65,6 +65,7 @@ void main() {
       'callerId': '123',
       'installments': 1,
       'creditType': null,
+      'allowPrintCurrentTransaction': null,
     });
   });
 
@@ -125,6 +126,7 @@ void main() {
       'transactionDate': DateFormat('dd/MM/yy').format(DateTime.now()),
       'cvNumber': '123',
       'originTerminal': '123',
+      'allowPrintCurrentTransaction': null,
     });
   });
 

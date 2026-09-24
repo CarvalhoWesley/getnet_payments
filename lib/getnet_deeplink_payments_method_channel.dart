@@ -31,6 +31,8 @@ class MethodChannelGetnetDeeplinkPayments
   /// [callerId] is the transaction identifier and cannot be empty.
   /// [installments] specifies the number of installments (between 1 and 12).
   /// [creditType] (optional) specifies the credit type for credit payments (creditMerchant or creditIssuer).
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
+  ///
   /// Returns a [Transaction] object containing the transaction details, or
   /// `null` if a transaction is already in progress or if the result is `null`.
   ///
@@ -42,6 +44,7 @@ class MethodChannelGetnetDeeplinkPayments
     required String callerId,
     int installments = 1,
     String? creditType,
+    bool? allowPrintCurrentTransaction,
   }) async {
     try {
       if (_transactionInProgress) {
@@ -58,6 +61,7 @@ class MethodChannelGetnetDeeplinkPayments
           'callerId': callerId,
           'installments': installments,
           'creditType': creditType,
+          'allowPrintCurrentTransaction': allowPrintCurrentTransaction,
         },
       );
 
@@ -81,6 +85,7 @@ class MethodChannelGetnetDeeplinkPayments
   /// formatted as `dd/MM/yy`.
   /// [cvNumber] (optional) is the control number of the transaction (CV).
   /// [originTerminal] (optional) identifies the origin terminal.
+  /// [allowPrintCurrentTransaction] (optional) specifies whether to allow printing the current transaction.
   ///
   /// Returns a [Transaction] object containing the refund details, or
   /// `null` if a transaction is already in progress or if the result is `null`.
@@ -92,6 +97,7 @@ class MethodChannelGetnetDeeplinkPayments
     DateTime? transactionDate,
     String? cvNumber,
     String? originTerminal,
+    bool? allowPrintCurrentTransaction,
   }) async {
     try {
       if (_transactionInProgress) {
@@ -109,6 +115,7 @@ class MethodChannelGetnetDeeplinkPayments
               : null,
           'cvNumber': cvNumber,
           'originTerminal': originTerminal,
+          'allowPrintCurrentTransaction': allowPrintCurrentTransaction,
         },
       );
 

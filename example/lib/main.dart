@@ -34,6 +34,8 @@ class _PaymentAppState extends State<PaymentApp>
   TextEditingController valueController = TextEditingController(text: '12.50');
   String? mensagem;
   String? mensagemTransacoes;
+  bool allowPrintCurrentTransaction = true;
+
   final List<Transaction> _successfulTransactions = [];
 
   @override
@@ -111,12 +113,12 @@ class _PaymentAppState extends State<PaymentApp>
     try {
       final callerId = const Uuid().v4();
       final transaction = await GetnetPayments.deeplink.payment(
-        amount: valor,
-        paymentType: type,
-        callerId: callerId,
-        installments: installments,
-        creditType: creditType,
-      );
+          amount: valor,
+          paymentType: type,
+          callerId: callerId,
+          installments: installments,
+          creditType: creditType,
+          allowPrintCurrentTransaction: !allowPrintCurrentTransaction);
       if (transaction != null) {
         setState(() {
           mensagem = '${transaction.result} - ${transaction.resultDetails}';
@@ -181,6 +183,16 @@ class _PaymentAppState extends State<PaymentApp>
                     hintText: 'Valor',
                     contentPadding: EdgeInsets.all(10.0),
                   ),
+                ),
+                Row(
+                  children: [
+                    Switch(
+                        value: allowPrintCurrentTransaction,
+                        onChanged: (value) {
+                          setState(() => allowPrintCurrentTransaction = value);
+                        }),
+                    const Text('Imprimir cupom'),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 Wrap(
@@ -296,6 +308,8 @@ class _PaymentAppState extends State<PaymentApp>
                                         amount: _convertAmount(transaction),
                                         transactionDate: DateTime.now(),
                                         cvNumber: transaction.cvNumber,
+                                        allowPrintCurrentTransaction:
+                                            !allowPrintCurrentTransaction,
                                       );
 
                                       if (refund != null) {
