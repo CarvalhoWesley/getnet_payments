@@ -1,16 +1,20 @@
 import 'package:getnet_payments/getnet_deeplink_payments.dart';
 import 'package:getnet_payments/getnet_pos.dart';
+import 'package:getnet_payments/getnet_nfc.dart';
 
 export 'enums/transaction/payment_type_enum.dart';
 export 'enums/transaction/transaction_result_enum.dart';
 export 'enums/pos/align_mode_enum.dart';
 export 'enums/pos/font_format_enum.dart';
+export 'enums/nfc/mifare_key_type_enum.dart';
 export 'models/transaction/automation_slip.dart';
 export 'models/transaction/mandatory_all_receipts_fields.dart';
 export 'models/transaction/mandatory_client_fields.dart';
 export 'models/transaction/mandatory_ec_fields.dart';
 export 'models/transaction/transaction.dart';
 export 'models/pos/item_print_model.dart';
+export 'models/nfc/nfc_cashless_card.dart';
+export 'getnet_nfc_cashless.dart';
 
 /// The [GetnetPayments] class serves as a facade for accessing and
 /// managing instances of [GetnetDeeplinkPayments].
@@ -21,6 +25,7 @@ export 'models/pos/item_print_model.dart';
 class GetnetPayments {
   static GetnetDeeplinkPayments _deeplink = GetnetDeeplinkPayments();
   static GetnetPos _pos = GetnetPos();
+  static GetnetNfc _nfc = GetnetNfc();
 
   /// Exposes the instance of the `GetnetDeeplinkPayments` class.
   ///
@@ -72,5 +77,18 @@ class GetnetPayments {
   /// [instance] must be a valid instance of [GetnetPos].
   static set pos(GetnetPos instance) {
     _pos = instance;
+  }
+
+  /// Exposes the instance of the `GetnetNfc` class (Mifare Classic).
+  ///
+  /// Example:
+  /// ```dart
+  /// final uid = await GetnetPayments.nfc.readCardId();
+  /// ```
+  static GetnetNfc get nfc => _nfc;
+
+  /// Replaces the instance of `GetnetNfc` if needed (e.g. for testing).
+  static set nfc(GetnetNfc instance) {
+    _nfc = instance;
   }
 }

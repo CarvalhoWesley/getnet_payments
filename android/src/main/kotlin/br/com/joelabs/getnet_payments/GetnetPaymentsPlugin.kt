@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import com.google.gson.Gson
 import br.com.joelabs.getnet_payments.usecases.PosUsecase
+import br.com.joelabs.getnet_payments.usecases.NfcUsecase
 
 /** GetnetPaymentsPlugin */
 class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
@@ -18,6 +19,7 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
   private var activity: Activity? = null
   private var deeplinkUsecase: DeeplinkUsecase? = null
   private var posUsecase: PosUsecase? = null
+  private val nfcUsecase = NfcUsecase()
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
       channel = MethodChannel(flutterPluginBinding.binaryMessenger, "getnet_payments")
@@ -74,6 +76,17 @@ class GetnetPaymentsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Act
 
           // Métodos relacionados ao PosUsecase
           "print" -> posUsecase?.print(call, result)
+
+          // Métodos relacionados ao NfcUsecase
+          "nfcReadCardId" -> nfcUsecase.readCardId(call, result)
+          "nfcReadBlock" -> nfcUsecase.readBlock(call, result)
+          "nfcWriteBlock" -> nfcUsecase.writeBlock(call, result)
+          "nfcDebugReadBlock" -> nfcUsecase.debugReadBlock(call, result)
+          "nfcAbort" -> nfcUsecase.abort(call, result)
+          "nfcSessionDetectCard" -> nfcUsecase.sessionDetectCard(call, result)
+          "nfcSessionReadBlock" -> nfcUsecase.sessionReadBlock(call, result)
+          "nfcSessionWriteBlock" -> nfcUsecase.sessionWriteBlock(call, result)
+          "nfcSessionPowerOff" -> nfcUsecase.sessionPowerOff(call, result)
               
           else -> 
               result.notImplemented()

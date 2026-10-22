@@ -181,6 +181,40 @@ O método `payment` retorna um objeto `Transaction` contendo as informações da
 | `4`       | Desconhecido           |
 | `5`       | Pendente               |
 
+## NFC (Mifare Classic)
+
+Cada método aguarda a aproximação do cartão e executa toda a operação (ativar, autenticar, ler/gravar) numa única aproximação. A chave padrão é `FF FF FF FF FF FF` (tipo A).
+
+```dart
+final uid = await GetnetPayments.nfc.readCardId();
+await GetnetPayments.nfc.writeBlockText(4, 'Ola');
+final texto = await GetnetPayments.nfc.readBlockText(4);
+
+final bytes = await GetnetPayments.nfc.readBlock(
+  8,
+  key: Uint8List.fromList([0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]),
+  keyType: MifareKeyTypeEnum.typeB,
+);
+
+await GetnetPayments.nfc.abort(); // cancela a espera pelo cartão
+```
+
+A gravação recusa o bloco 0 e os trailers de setor, e confere o bloco relendo-o após gravar. Erros são lançados como `PlatformException` com os códigos `NO_SERVICE`, `NO_CARD`, `ABORTED`, `INVALID_BLOCK`, `INVALID_DATA`, `AUTH_ERROR`, `READ_ERROR`, `WRITE_ERROR`, `WRITE_NOT_CONFIRMED` ou `NFC_ERROR`.
+
+### Cartão de evento (cashless)
+
+`GetnetNfcCashless` usa o mesmo layout de blocos do `pagseguro_smart_flutter` e do `stone_payments`, então um cartão aberto num terminal PagSeguro ou Stone funciona aqui e vice-versa.
+
+```dart
+await GetnetNfcCashless.openCard(value: 50, eventId: 'EVT001', name: 'Fulano');
+final card = await GetnetNfcCashless.debit(value: 12.5, eventId: 'EVT001');
+print(card.value); // 37.5
+```
+
+Erros de regra lançam `NfcCashlessException` (`cartao_ja_aberto`, `cartao_nao_aberto`, `evento_nao_compativel`, `saldo_insuficiente`, `valor_invalido`, `formatacao_incompleta`).
+
+> Conforme a [documentação da Getnet](https://getstore.getnet.com.br/docs/integracao-hardware/mifare/), as tags Mifare usadas pelo app devem ser enviadas previamente à Getnet para homologação.
+
 ## Contribuição
 
 Contribuições são bem-vindas! Para reportar problemas ou sugerir melhorias, utilize a [página de issues](https://github.com/CarvalhoWesley/getnet_payments/issues).

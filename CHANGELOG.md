@@ -1,3 +1,12 @@
+## [1.3.0] - 2026-10-22
+
+### Added
+
+- Generic NFC API (Mifare Classic 1K/4K) via `GetnetPayments.nfc`: `readCardId`, `readBlock`, `writeBlock`, `readBlockText`, `writeBlockText`, `debugReadBlock` and `abort`.
+- `MifareKeyTypeEnum` to authenticate with key A or B.
+- NFC session (`detectCard`, `sessionReadBlock`, `sessionWriteBlock`, `powerOff`) for several operations in a single tap.
+- `GetnetNfcCashless`: event (cashless) card compatible with pagseguro_smart_flutter and stone_payments (`readCard`, `openCard`, `recharge`, `debit`, `refund`, `format`, `formatAll`).
+- Example app reorganized (Deeplink · NFC · Logs), with Cartão, Evento and Blocos tabs.
 ## [1.1.0] - 2025-04-25
 
 ### Added
