@@ -3,6 +3,7 @@ import 'package:getnet_payments/getnet_payments.dart';
 
 import '../core/app_log.dart';
 import '../core/ui.dart';
+import 'nfc_store.dart';
 
 class NfcCardTab extends StatefulWidget {
   const NfcCardTab({super.key});
@@ -42,6 +43,30 @@ class _NfcCardTabState extends State<NfcCardTab>
                               fontSize: 22);
                         }
                         return id;
+                      })
+                  : null,
+            ),
+          ]),
+        ],
+      ),
+      Section(
+        title: 'Diagnóstico',
+        hint: 'Lê todos os 16 setores com a chave abaixo. Mantenha o cartão '
+            'encostado até terminar.',
+        children: [
+          const NfcKeyFields(),
+          ActionWrap(children: [
+            ActionButton(
+              label: 'Ler todos os setores',
+              icon: Icons.manage_search,
+              onPressed: enabled
+                  ? () => run('Diagnóstico completo', () async {
+                        final report = await NfcStore.diagnoseAllSectors();
+                        if (context.mounted) {
+                          showTextDialog(context, 'Setores do cartão', report,
+                              fontSize: 11);
+                        }
+                        return '\n$report';
                       })
                   : null,
             ),

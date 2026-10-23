@@ -15,6 +15,8 @@
 - Suporte a pagamentos nos modos **crédito**, **débito**, **voucher** e **PIX**.
 - Configuração de parcelamentos.
 - Retorno estruturado da transação com detalhes como **calledId**, **authorizationCode** e outros.
+- Impressão na impressora do terminal (texto, QR Code, código de barras e imagem).
+- Leitura e gravação de cartões **NFC Mifare Classic** (1K/4K), incluindo cartão de evento (cashless).
 
 ## Recomendações
 Recomendamos que você leia a [documentação oficial da Getnet](https://getstore.getnet.com.br/docs) para obter mais informações sobre a integração de pagamentos.
@@ -187,8 +189,8 @@ Cada método aguarda a aproximação do cartão e executa toda a operação (ati
 
 ```dart
 final uid = await GetnetPayments.nfc.readCardId();
-await GetnetPayments.nfc.writeBlockText(4, 'Ola');
-final texto = await GetnetPayments.nfc.readBlockText(4);
+await GetnetPayments.nfc.writeBlockText(16, 'Ola');
+final texto = await GetnetPayments.nfc.readBlockText(16);
 
 final bytes = await GetnetPayments.nfc.readBlock(
   8,
@@ -200,6 +202,27 @@ await GetnetPayments.nfc.abort(); // cancela a espera pelo cartão
 ```
 
 A gravação recusa o bloco 0 e os trailers de setor, e confere o bloco relendo-o após gravar. Erros são lançados como `PlatformException` com os códigos `NO_SERVICE`, `NO_CARD`, `ABORTED`, `INVALID_BLOCK`, `INVALID_DATA`, `AUTH_ERROR`, `READ_ERROR`, `WRITE_ERROR`, `WRITE_NOT_CONFIRMED` ou `NFC_ERROR`.
+
+Os blocos 1 a 12 são usados pelo cartão de evento (abaixo); para dados próprios, prefira os setores 4 em diante (bloco 16+).
+
+### Sessão (várias operações numa aproximação)
+
+Para ler ou gravar vários blocos com o cartão encostado uma única vez, abra uma sessão e sempre a encerre com `powerOff`:
+
+```dart
+final nfc = GetnetPayments.nfc;
+final uid = await nfc.detectCard();
+try {
+  for (var block = 0; block < 64; block++) {
+    final data = await nfc.sessionReadBlock(block);
+    print('$block: $data');
+  }
+} finally {
+  await nfc.powerOff();
+}
+```
+
+Se a autenticação de um setor falhar, o cartão sai da sessão: chame `detectCard` de novo antes de continuar. O app de exemplo usa isso no diagnóstico **Ler todos os setores** (aba NFC › Cartão).
 
 ### Cartão de evento (cashless)
 

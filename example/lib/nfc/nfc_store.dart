@@ -21,6 +21,40 @@ class NfcStore {
   static String toHex(Uint8List data) => data
       .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
       .join(' ');
+
+  /// Lê os 16 setores numa única aproximação. Uma autenticação que falha
+  /// derruba a sessão do cartão, então ele é detectado de novo antes do próximo setor.
+  static Future<String> diagnoseAllSectors() async {
+    final key = parseKey(); // valida a chave antes de esperar o cartão
+    final keyType = NfcStore.keyType.value;
+    final nfc = GetnetPayments.nfc;
+    final report = StringBuffer();
+    var detected = false;
+    try {
+      for (var sector = 0; sector < 16; sector++) {
+        if (!detected) {
+          final uid = await nfc.detectCard();
+          if (sector == 0) report.writeln('UID: $uid\n');
+          detected = true;
+        }
+        report.writeln('Setor $sector');
+        try {
+          for (var block = sector * 4; block < sector * 4 + 4; block++) {
+            final data =
+                await nfc.sessionReadBlock(block, key: key, keyType: keyType);
+            report.writeln('  ${block.toString().padLeft(2)}: ${toHex(data)}');
+          }
+        } on PlatformException catch (e) {
+          report.writeln('  ERRO: [${e.code}] ${e.message ?? ''}');
+          await nfc.powerOff();
+          detected = false;
+        }
+      }
+    } finally {
+      if (detected) await nfc.powerOff();
+    }
+    return report.toString();
+  }
 }
 
 /// Campos da chave do setor (hex + tipo A/B).
